@@ -53,12 +53,25 @@ public ResolvedBinary[] resolveAll(string command) {
         foreach (name; names) {
             auto full = buildPath(dir, name);
             if (exists(full) && isFile(full)) {
-                // de-dupe
+                version (Windows) {
+                    import std.uni : toLower;
+                    auto key = full.toLower();
+                } else {
+                    auto key = full;
+                }
                 bool dupe = false;
                 foreach (f; found) {
-                    if (f.path == full) {
-                        dupe = true;
-                        break;
+                    version (Windows) {
+                        import std.uni : toLower;
+                        if (f.path.toLower() == key) {
+                            dupe = true;
+                            break;
+                        }
+                    } else {
+                        if (f.path == key) {
+                            dupe = true;
+                            break;
+                        }
                     }
                 }
                 if (!dupe) {
@@ -124,7 +137,7 @@ private int runExternal(string[] argv) {
     }
 }
 
-private ResolvedBinary pickBinary(string command, string forcedPath, ResolvedBinary[] matches) {
+private ResolvedBinary pickBinary(string command, string forcedPath, ResolvedBinary[] matches, bool allowPrompt) {
     if (forcedPath.length) {
         if (!exists(forcedPath)) {
             stderr.writeln("help: --path not found: ", forcedPath);
@@ -135,7 +148,7 @@ private ResolvedBinary pickBinary(string command, string forcedPath, ResolvedBin
     if (matches.length == 0) {
         return ResolvedBinary.init;
     }
-    if (matches.length == 1) {
+    if (matches.length == 1 || !allowPrompt) {
         return matches[0];
     }
 
@@ -214,7 +227,7 @@ void main(string[] argv) {
     string[] nav = args.length > 1 ? args[1 .. $] : [];
 
     auto matches = resolveAll(command);
-    auto chosen = pickBinary(command, forcedPath, matches);
+    auto chosen = pickBinary(command, forcedPath, matches, !orientOnly);
     if (chosen.path.length == 0 && matches.length == 0 && forcedPath.length == 0) {
         stderr.writefln("help: command not found on PATH: %s", command);
         // still try info/man by name
