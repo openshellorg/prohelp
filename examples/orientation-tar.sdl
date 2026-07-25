@@ -1,0 +1,6 @@
+orientation "tar" {
+    summary "Tape archiver utility"
+    description "Combine multiple files into a single archive, or extract and list archive members. Common on Unix-like systems for backups and software distribution."
+    history "Named for magnetic tape; GNU tar remains the de facto Linux implementation. Progressive help for flags lives in help.sdl; full manuals live in Info/man."
+    see-also "help" "info" "man"
+}

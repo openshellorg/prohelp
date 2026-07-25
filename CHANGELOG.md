@@ -8,6 +8,7 @@ This project maintains a structured release history with links to detailed relea
 
 ## Release History
 
+* **2026-07-25** — Moved to OpenShellOrg (`openshellorg/prohelp`). Added orientation record schema, global `help` dispatcher binary, and crosslinks to `about` / `info` / `man`. Origin: Dev-Centr.
 * **2026-05-27** — Relicense under GPL-3.0-or-later (replacing unstated/MIT references).
 * **2026-05-27** — [Initial Release of Prohelp v0.1.0](changelog-details/2026-05-27%20-%20v0.1.0-release.md)
   * Complete core Dlang progressive library and CLI parser.

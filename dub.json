@@ -1,8 +1,9 @@
 {
     "name": "prohelp",
-    "description": "Progressive CLI help specification and reference library",
-    "authors": ["dev-centr"],
+    "description": "Progressive CLI help specification and reference library (OpenShellOrg)",
+    "authors": ["OpenShellOrg", "dev-centr"],
     "license": "Proprietary",
+    "homepage": "https://github.com/openshellorg/prohelp",
     "targetType": "library",
     "dependencies": {
         "sdlang-d": "~>0.10.6"
@@ -15,9 +16,20 @@
         {
             "name": "executable",
             "targetType": "executable",
+            "targetName": "prohelp",
             "mainSourceFile": "source/app.d",
+            "excludedSourceFiles": ["source/help_main.d"],
             "stringImportPaths": ["."],
             "versions": ["ProhelpExecutable"]
+        },
+        {
+            "name": "help",
+            "targetType": "executable",
+            "targetName": "help",
+            "mainSourceFile": "source/help_main.d",
+            "excludedSourceFiles": ["source/app.d"],
+            "stringImportPaths": ["."],
+            "versions": ["ProhelpHelpBinary"]
         }
     ]
 }

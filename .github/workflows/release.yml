@@ -82,6 +82,6 @@ jobs:
             - **Windows:** `prohelp-windows.exe`
             - **macOS:** `prohelp-macos`
             
-            Please refer to the [CHANGELOG.md](https://github.com/dev-centr/prohelp/blob/main/CHANGELOG.md) for full details of changes.
+            Please refer to the [CHANGELOG.md](https://github.com/openshellorg/prohelp/blob/main/CHANGELOG.md) for full details of changes.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

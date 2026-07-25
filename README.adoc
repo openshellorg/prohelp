@@ -1,8 +1,10 @@
 = Prohelp: Progressive CLI Help
-dev-centr <devcentr.org>
-v0.1.0, 2026-05-27
+Open Shell Organization <https://github.com/openshellorg>
+v0.2.0, 2026-07-25
 :toc:
-:homepage: link:https://github.com/dev-centr/prohelp[dev-centr/prohelp]
+:homepage: link:https://github.com/openshellorg/prohelp[openshellorg/prohelp]
+
+Moved from Dev-Centr (`dev-centr/prohelp`) into OpenShellOrg as the reusable progressive-help library and global `help` entry point.
 
 The standard command-line help interface (`--help` or `help`) is broken. It dumps massive walls of unreadable text.
 
@@ -10,7 +12,7 @@ The standard command-line help interface (`--help` or `help`) is broken. It dump
 
 Prohelp is **not** a full command-line application framework. It solves progressive *help* only. For building CLI tools, use a framework and wire Prohelp in:
 
-* **D (recommended):** link:https://github.com/dev-centr/prohelp-cli[prohelp-cli] with link:https://opendlang.org/library/arsd.cli.html[arsd.cli] (or another D CLI router) — parsing and routing stay in the framework; help stays in Prohelp.
+* **D (recommended):** link:https://github.com/openshellorg/prohelp-cli[prohelp-cli] with link:https://opendlang.org/library/arsd.cli.html[arsd.cli] (or another D CLI router) — parsing and routing stay in the framework; help stays in Prohelp.
 * **C / BetterC:** the `prohelp` library's C-compatible API (planned) — combine with your existing argv parser.
 * **Other languages:** consume Prohelp through FFI and pair it with your ecosystem's CLI framework (Click, clap, cobra, etc.).
 
@@ -71,7 +73,19 @@ prohelp -f myapp/help.sdl ?:de,i
 
 === D applications (prefer prohelp-cli)
 
-For new D command-line tools, prefer link:https://github.com/dev-centr/prohelp-cli[prohelp-cli] integrated with a CLI router such as link:https://opendlang.org/library/arsd.cli.html[arsd.cli]. See the prohelp-cli repository for how execution routing and progressive help cooperate.
+For new D command-line tools, prefer link:https://github.com/openshellorg/prohelp-cli[prohelp-cli] integrated with a CLI router such as link:https://opendlang.org/library/arsd.cli.html[arsd.cli]. See the prohelp-cli repository for how execution routing and progressive help cooperate.
+
+=== Global `help` command
+
+Install the `help` binary (DUB config `help`) onto `PATH` to open progressive help for any command:
+
+[source,shell]
+----
+help tar
+help --path=/usr/bin/tar tar
+----
+
+Resolution order: adjacent `help.sdl` / orientation pack → OpenShellOrg `info` TUI or classic `info`/`man` → `<cmd> --help`.
 
 === Drop-in intercept (library)
 
@@ -97,6 +111,6 @@ Prohelp is licensed under the link:LICENSE[Prohelp Copyleft and Disclosure Licen
 
 This is a strong copyleft license with a mandatory downstream disclosure rider. You may copy, modify, and distribute this software provided that:
 1. Any derivative works are licensed under the exact same PCDL Version 1.0 terms (strong copyleft).
-2. You publicly disclose the existence of your derivative work and notify the original project (Parent Project) at link:https://github.com/dev-centr/prohelp[dev-centr/prohelp] within 30 days of release or deployment.
+2. You publicly disclose the existence of your derivative work and notify the original project (Parent Project) at link:https://github.com/openshellorg/prohelp[openshellorg/prohelp] within 30 days of release or deployment.
 
 See the link:LICENSE[LICENSE] file for full legal terms.

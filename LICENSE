@@ -1,7 +1,8 @@
 PROHELP COPYLEFT AND DISCLOSURE LICENSE (PCDL)
 Version 1.0, May 2026
 
-Copyright (c) 2026, dev-centr <devcentr.org>
+Copyright (c) 2026, Open Shell Organization <https://github.com/openshellorg>
+Copyright (c) 2026, Dev-Centr <devcentr.org> (origin)
 All rights reserved.
 
 This license governs the use, copying, modification, and distribution of the "Prohelp" software and any derivative works thereof.
@@ -16,7 +17,7 @@ TERMS AND CONDITIONS
 
 "Derivative Work" refers to any work that is based on, derived from, or incorporates any portion of the Software, including but not limited to translations, ports, modifications, integrations, extensions, or rewrites in other programming languages.
 
-"Parent Project" refers to the original repository and organization under which the Software is hosted, currently located at: https://github.com/dev-centr/prohelp
+"Parent Project" refers to the original repository and organization under which the Software is hosted, currently located at: https://github.com/openshellorg/prohelp
 
 
 2. STRONG COPYLEFT REQUIREMENT
@@ -33,7 +34,7 @@ The disclosure must be completed within thirty (30) days of the first public rel
 
 B. Method of Notification:
 The notification must be submitted to the Parent Project by doing at least one of the following:
-1. Opening a public issue on the Parent Project's official repository (https://github.com/dev-centr/prohelp) containing the disclosure information.
+1. Opening a public issue on the Parent Project's official repository (https://github.com/openshellorg/prohelp) containing the disclosure information.
 2. Submitting a pull request to include the Derivative Work in the Parent Project's official registry or documentation.
 
 C. Required Disclosure Information:

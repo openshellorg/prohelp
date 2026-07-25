@@ -1,0 +1,49 @@
+﻿# Exclude dependency and build folders immediately without allow prefixes (prevents Git deep recursion)
+node_modules/
+dist/
+out/
+.dub/
+build/
+*.exe
+*.pdb
+*.obj
+*.lib
+
+# Ignore everything by default
+*
+
+# Allow directory structures
+!*/
+!source/
+!source/prohelp/
+!site/
+!examples/
+!changelog-details/
+!.github/
+!.github/workflows/
+
+# Allow specific root files
+!.gitignore
+!README.adoc
+!CHANGELOG.md
+!LICENSE
+!COPYING
+!dub.json
+!help.sdl
+
+# Allow source files
+!source/app.d
+!source/help_main.d
+!source/prohelp/*.d
+!examples/*.sdl
+!changelog-details/*.md
+!.github/workflows/*.yml
+
+# Allow website source files
+!site/package.json
+!site/pnpm-lock.yaml
+!site/tsconfig*.json
+!site/vite.config.ts
+!site/index.html
+!site/src/
+!site/src/**/*
