@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup D compiler
+        uses: dlang-community/setup-dlang@v1
+        with:
+          compiler: ldc-latest
+
+      - name: Build library
+        run: dub build -c library
+
+      - name: Build prohelp preview CLI
+        run: dub build -c executable --build=release
+
+      - name: Build help dispatcher
+        run: dub build -c help --build=release
+
+      - name: Smoke prohelp
+        shell: bash
+        run: |
+          if [ -f prohelp.exe ]; then BIN=./prohelp.exe; else BIN=./prohelp; fi
+          "$BIN" --help || "$BIN" ?
+
+      - name: Smoke help
+        shell: bash
+        run: |
+          if [ -f help.exe ]; then BIN=./help.exe; else BIN=./help; fi
+          "$BIN" --help
+          "$BIN" --orient help || true

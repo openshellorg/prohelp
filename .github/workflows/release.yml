@@ -1,61 +1,83 @@
-name: Build and Release prohelp
+name: Build and Release
 
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g. v0.2.0); empty uses the pushed tag'
+        required: false
+        default: ''
 
 permissions:
   contents: write
 
 jobs:
   build:
-    name: Build Binary
+    name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
         include:
           - os: ubuntu-latest
-            artifact_name: prohelp-linux
-            target_path: prohelp
+            suffix: linux
           - os: windows-latest
-            artifact_name: prohelp-windows.exe
-            target_path: prohelp.exe
+            suffix: windows
           - os: macos-latest
-            artifact_name: prohelp-macos
-            target_path: prohelp
+            suffix: macos
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Dlang compiler
+      - name: Setup D compiler
         uses: dlang-community/setup-dlang@v1
         with:
           compiler: ldc-latest
 
-      - name: Build executable
-        run: dub build -c executable --build=release
-
-      - name: Rename binary for release
+      - name: Build binaries
         run: |
-          mv ${{ matrix.target_path }} ${{ matrix.artifact_name }}
-        shell: bash
+          dub build -c executable --build=release
+          dub build -c help --build=release
 
-      - name: Upload artifact
+      - name: Package artifacts
+        shell: bash
+        run: |
+          mkdir -p dist
+          if [ -f prohelp.exe ]; then
+            cp prohelp.exe dist/prohelp-windows.exe
+            cp help.exe dist/help-windows.exe
+          else
+            cp prohelp "dist/prohelp-${{ matrix.suffix }}"
+            cp help "dist/help-${{ matrix.suffix }}"
+          fi
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}
-          path: ${{ matrix.artifact_name }}
+          name: binaries-${{ matrix.suffix }}
+          path: dist/*
 
   release:
     name: Create GitHub Release
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: ver
+        run: |
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          VERSION="${TAG#v}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -63,25 +85,30 @@ jobs:
           path: release-assets
           merge-multiple: true
 
+      - name: Checksums
+        run: |
+          cd release-assets
+          sha256sum * > SHA256SUMS
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            release-assets/prohelp-linux
-            release-assets/prohelp-windows.exe
-            release-assets/prohelp-macos
-          draft: false
-          prerelease: false
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: prohelp ${{ steps.ver.outputs.version }}
+          generate_release_notes: true
+          files: release-assets/*
           body: |
-            ## Prohelp Release
-            
-            Welcome to the new release of **Prohelp**!
-            
-            ### Download Binaries
-            - **Linux:** `prohelp-linux`
-            - **Windows:** `prohelp-windows.exe`
-            - **macOS:** `prohelp-macos`
-            
-            Please refer to the [CHANGELOG.md](https://github.com/openshellorg/prohelp/blob/main/CHANGELOG.md) for full details of changes.
+            ## Prohelp ${{ steps.ver.outputs.version }}
+
+            Progressive CLI help library + preview CLI + global `help` dispatcher.
+
+            ### Binaries
+
+            | Tool | Linux | Windows | macOS |
+            |---|---|---|---|
+            | Preview CLI | `prohelp-linux` | `prohelp-windows.exe` | `prohelp-macos` |
+            | Global help | `help-linux` | `help-windows.exe` | `help-macos` |
+
+            See [CHANGELOG.md](https://github.com/openshellorg/prohelp/blob/main/CHANGELOG.md).
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
