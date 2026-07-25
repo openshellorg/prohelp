@@ -1,0 +1,16 @@
+= Global help
+:description: Install the help binary for progressive help on any command.
+
+Install the `help` binary (DUB config `help`) onto `PATH` to open progressive help for any command:
+
+[source,shell]
+----
+help tar
+help --path=/usr/bin/tar tar
+----
+
+Resolution order:
+
+. Adjacent `help.sdl` / orientation pack
+. OpenShellOrg xref:info::index.adoc[info] TUI or classic `info`/`man`
+. `<cmd> --help`

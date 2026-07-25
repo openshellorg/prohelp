@@ -1,0 +1,19 @@
+= Prohelp
+:description: Progressive CLI help specification and reference library.
+
+The standard command-line help interface (`--help` or `help`) is broken.
+It dumps massive walls of unreadable text.
+
+*Prohelp* is a progressive help specification and reference library: a *professional-grade*, budget-enforced terminal documentation system with Unicode box panels, locale-aware rendering, and an optional full-screen TUI.
+
+Prohelp is *not* a full command-line application framework.
+It solves progressive *help* only.
+For building CLI tools, use a framework and wire Prohelp in:
+
+* *D (recommended):* xref:prohelp-cli::index.adoc[prohelp-cli] with https://opendlang.org/library/arsd.cli.html[arsd.cli]
+* *C / BetterC:* the `prohelp` library's C-compatible API (planned)
+* *Other languages:* consume Prohelp through FFI and pair it with your ecosystem's CLI framework
+
+The `prohelp` preview executable ships with built-in help and can interpret any `help.sdl` schema for authoring and testing.
+
+Moved from Dev-Centr into OpenShellOrg as the reusable progressive-help library and global `help` entry point.

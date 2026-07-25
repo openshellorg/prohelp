@@ -19,6 +19,7 @@ build/
 !site/
 !examples/
 !changelog-details/
+!docs/
 !.github/
 !.github/workflows/
 
@@ -37,6 +38,9 @@ build/
 !source/prohelp/*.d
 !examples/*.sdl
 !changelog-details/*.md
+!docs/**
+!docs/**/*.adoc
+!docs/**/*.yml
 !.github/workflows/*.yml
 
 # Allow website source files

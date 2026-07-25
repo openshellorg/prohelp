@@ -1,0 +1,32 @@
+= Getting Started
+:description: Build and run the prohelp preview CLI.
+
+== Prerequisites
+
+* https://dlang.org/[D Compiler (DMD or LDC)]
+* https://dub.pm/[DUB]
+
+== Compilation
+
+[source,powershell]
+----
+dub build -c executable
+----
+
+== CLI usage
+
+[source,powershell]
+----
+prohelp
+prohelp ?
+prohelp ?:i
+----
+
+== Preview mode (schema interpreter)
+
+[source,powershell]
+----
+prohelp examples/tar.sdl ?
+prohelp examples/tar.sdl ? operations
+prohelp -f myapp/help.sdl ?:de,i
+----

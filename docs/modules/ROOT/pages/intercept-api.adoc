@@ -1,0 +1,16 @@
+= Intercept API
+:description: Drop-in progressive help intercept for CLI mains.
+
+For minimal integration or non-D languages via FFI, add `prohelp` as a dependency and call `intercept` before your existing argument parser:
+
+[source,d]
+----
+import prohelp.intercept;
+
+void main(string[] args) {
+    if (prohelp.intercept(args)) return;
+    // Your CLI framework or hand-rolled parser continues here...
+}
+----
+
+For new D command-line tools, prefer xref:prohelp-cli::index.adoc[prohelp-cli] with a CLI router such as arsd.cli.
