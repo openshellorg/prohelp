@@ -265,6 +265,7 @@ void main(string[] argv) {
             orient = new Orientation();
             orient.name = command;
             orient.summary = "(no orientation pack or help.sdl found)";
+            orient.seeAlso = ["help", "info", "man"];
             if (chosen.path.length) orient.binaryPaths ~= chosen.path;
             foreach (m; matches) {
                 if (m.path != chosen.path) orient.binaryPaths ~= m.path;

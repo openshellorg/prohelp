@@ -108,6 +108,9 @@ public string renderOrientationCard(Orientation o, bool includeSeeAlso = true) {
         }
     }
     if (includeSeeAlso) {
+        if (o.seeAlso.length == 0) {
+            o.seeAlso = ["help", "info", "man"];
+        }
         lines.put("\nDig deeper:\n");
         string n = o.name;
         bool hasHelp, hasInfo, hasMan;
