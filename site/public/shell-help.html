@@ -42,7 +42,8 @@
       Shell <code>help</code> documents the shell. <code>man</code> / <code>info</code> document programs.
       Historically <code>help</code> never became the front door for PATH tools. Prohelp installs a
       <strong>shell function</strong> named <code>help</code> that keeps builtin help for builtins and
-      routes everything else through prohelp (and man/info / <code>help.sdl</code> when available).
+      routes everything else through prohelp (and man/info /
+      <code>help.sdl</code> / <code>help.md</code> / <code>help.adoc</code> when available).
     </p>
     <p>
       Dropping <code>help.exe</code> on <code>PATH</code> does <em>not</em> override bash/zsh builtins.
@@ -70,7 +71,9 @@ help printf</pre>
       <li><code>prohelp wrapper uninstall</code></li>
     </ul>
 
-    <p class="muted">Also available in-terminal: <code>prohelp ? shell-help</code></p>
+    <p class="muted">Also available in-terminal: <code>prohelp ? shell-help</code> ·
+       schema authoring: <code>prohelp ? meta</code> ·
+       examples <code>help.md</code> / <code>help.adoc</code></p>
     <p><a href="https://github.com/openshellorg/prohelp">Repository</a> ·
        <a href="https://github.com/openshellorg/prohelp/issues">Issues</a></p>
   </main>
