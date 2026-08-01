@@ -10,6 +10,7 @@ import std.stdio;
 import std.string;
 import prohelp.config;
 import prohelp.intercept;
+import prohelp.nudge;
 import prohelp.orientation;
 import prohelp.parser;
 import prohelp.registration;
@@ -63,10 +64,23 @@ private bool commandOnPath(string cmd) {
     }
 }
 
-private string findAdjacentHelpSdl(string binaryPath) {
+/// Adjacent schema: help.sdl preferred, then document formats; also parent dir.
+string findAdjacentHelpSchema(string binaryPath) {
     string dir = dirName(binaryPath);
-    foreach (c; [buildPath(dir, "help.sdl"), buildPath(dir, "..", "help.sdl")]) {
-        if (exists(c) && isFile(c)) return c;
+    string[] names = [
+        "help.sdl", "help.md", "help.markdown", "help.adoc", "help.asciidoc", "help.cmk"
+    ];
+    foreach (base; [dir, buildPath(dir, "..")]) {
+        foreach (name; names) {
+            auto c = buildPath(base, name);
+            if (exists(c) && isFile(c)) return c;
+        }
+        // <cmd>.help.md next to binary (optional authoring style)
+        auto stem = baseName(stripExtension(binaryPath));
+        foreach (ext; [".help.sdl", ".help.md", ".help.adoc", ".help.cmk"]) {
+            auto c = buildPath(base, stem ~ ext);
+            if (exists(c) && isFile(c)) return c;
+        }
     }
     return "";
 }
@@ -121,10 +135,10 @@ public int runAsHelp(string[] topics) {
 
     Orientation orient = tryLoadOrientationNear(chosen, command);
     if (orient is null && chosen.length) {
-        auto sdl = findAdjacentHelpSdl(chosen);
-        if (sdl.length) {
+        auto schema = findAdjacentHelpSchema(chosen);
+        if (schema.length) {
             try {
-                orient = fromCommand(parseHelpSDL(sdl));
+                orient = fromCommand(loadCommand(InterceptConfig.fromFile(schema)));
             } catch (Exception e) {
                 stderr.writeln("prohelp: ", e.msg);
             }
@@ -132,16 +146,19 @@ public int runAsHelp(string[] topics) {
     }
 
     if (chosen.length) {
-        auto sdl = findAdjacentHelpSdl(chosen);
-        if (sdl.length) {
+        auto schema = findAdjacentHelpSchema(chosen);
+        if (schema.length) {
             if (orient !is null) write(renderOrientationCard(orient, false));
             string[] helpArgs = [command, "?"];
             if (nav.length) helpArgs ~= nav;
-            intercept(helpArgs, InterceptConfig.fromFile(sdl));
+            intercept(helpArgs, InterceptConfig.fromFile(schema));
             printCrosslinks(command);
             return 0;
         }
     }
+
+    // No prohelp schema registered for this command — nudge a feature request.
+    nudgeMissingProhelpDocs(command, chosen, isStdoutTTYCompat());
 
     if (orient !is null) write(renderOrientationCard(orient));
 

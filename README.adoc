@@ -111,7 +111,12 @@ void main(string[] args) {
 }
 ----
 
-Standard schema metadata (shown near the top of help pages): `title`, `homepage`, `docs`, `issues`, `issues-ai`, plus `content` or `content-ref` for shared AsciiDoc/Markdown sources.
+Standard schema metadata (shown near the top of help pages): `title`, `homepage`, `docs`, `issues`, `issues-ai`, plus `content` or `content-ref` for shared AsciiDoc/Markdown/CentrMark (`.cmk`) sources.
+
+You may also author the **entire** schema as `help.md`, `help.adoc`, or `help.cmk` with frontmatter (YAML / AsciiDoc attributes / CentrMark SDL). Headings become the section tree. Place the file beside the binary (discovered by `prohelp --as-help`) or pass it explicitly: `prohelp examples/help.md ?`.
+
+When essential discovery fields (`homepage`, `docs`, `issues`) are empty after parsing, prohelp prints a short notice with a DuckDuckGo link seeded with the binary name/path. Fields that are set in `help.sdl` or document frontmatter never trigger a warning. When a command has no prohelp schema at all, prohelp nudges a feature request the same way.
+
 == Changelog
 
 For a full release history and details of specifications, please see the link:CHANGELOG.md[Changelog].

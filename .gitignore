@@ -41,6 +41,10 @@ build/
 !source/help_main.d
 !source/prohelp/*.d
 !examples/*.sdl
+!examples/*.cmk
+!examples/*.md
+!examples/*.adoc
+!examples/*.markdown
 !changelog-details/*.md
 !docs/**
 !docs/**/*.adoc

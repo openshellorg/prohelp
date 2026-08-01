@@ -15,7 +15,7 @@ version (ProhelpExecutable) {
 }
 
 private bool isSchemaPath(string arg) {
-    return arg.endsWith(".sdl");
+    return isHelpSchemaPath(arg);
 }
 
 private bool isHelpTrigger(string arg) {
@@ -105,6 +105,7 @@ void main(string[] argv) {
         stderr.writeln("  prohelp wrapper install");
         stderr.writeln("  prohelp --as-help <command>");
         stderr.writeln("  prohelp path/to/help.sdl ?");
+        stderr.writeln("  prohelp path/to/help.md ?");
         return;
     }
 

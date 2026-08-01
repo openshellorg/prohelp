@@ -49,7 +49,7 @@ command "prohelp" {
 
     section "meta" {
         summary "Standard metadata fields for every prohelp command schema"
-        content "Required/recommended command fields:\n  name (binary), title (full app name), summary, description (content),\n  homepage, docs, issues, issues-ai (optional AI report UI).\nSections may use inline `content` or `content-ref \"path\" { format \"asciidoc\" }` to reuse web/docs sources at runtime."
+        content "Required/recommended command fields:\n  name (binary), title (full app name), summary, description (content),\n  homepage, docs, issues, issues-ai (optional AI report UI).\nAuthor as help.sdl, or as help.md / help.adoc / help.cmk with frontmatter (YAML, AsciiDoc attributes, or CentrMark SDL fence).\nHeadings become sections.\nEssential discovery fields (homepage, docs, issues): warn only when empty — if set in the definition or frontmatter, no notice.\nWhen a PATH command has no prohelp schema, prohelp nudges a feature request (search link included)."
     }
 
     section "navigation" {

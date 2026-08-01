@@ -13,6 +13,7 @@ import prohelp.locale;
 import prohelp.pager;
 import prohelp.embedded;
 import prohelp.registration;
+import prohelp.nudge;
 
 // First-pass CLI Argument Interceptor
 public bool intercept(string[] args, InterceptConfig config = InterceptConfig.init) {
@@ -59,6 +60,7 @@ public bool intercept(string[] args, InterceptConfig config = InterceptConfig.in
     string schemaLabel = config.isConfigured
         ? (config.schemaLabel.length > 0 ? config.schemaLabel : "help.sdl")
         : "help.sdl";
+    warnMissingCommandMetadata(cmd, schemaLabel, isStdoutTTY());
 
     string localeCode = getSystemLocale();
     bool useTUI = false;

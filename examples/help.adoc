@@ -1,0 +1,18 @@
+= AsciiDoc prohelp demo
+:name: demo-adoc
+:summary: Entire progressive-help schema authored as AsciiDoc
+:description: Prefer this when the same source feeds Antora or other AsciiDoc sites.
+:homepage: https://github.com/openshellorg/prohelp
+:docs: https://openshellorg.github.io/prohelp/shell-help.html
+:issues: https://github.com/openshellorg/prohelp/issues
+
+== Usage
+
+Pass this file to prohelp or place `help.adoc` beside your binary.
+
+* `prohelp help.adoc ?`
+* `yourcmd ? usage`
+
+== Sections
+
+`==` headings become top-level sections; `===` headings nest underneath.

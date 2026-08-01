@@ -1,5 +1,7 @@
 module prohelp.content;
 
+import prohelp.centrmark;
+
 import std.algorithm;
 import std.array;
 import std.file;
@@ -11,6 +13,7 @@ enum ContentFormat {
     text,
     asciidoc,
     markdown,
+    centrmark,
     sdl
 }
 
@@ -18,14 +21,27 @@ ContentFormat parseContentFormat(string s) {
     auto l = s.strip().toLower();
     if (l == "adoc" || l == "asciidoc" || l == "asciidoctor") return ContentFormat.asciidoc;
     if (l == "md" || l == "markdown") return ContentFormat.markdown;
+    if (l == "cmk" || l == "centrmark" || l == "centr-mark") return ContentFormat.centrmark;
     if (l == "sdl" || l == "sdlang") return ContentFormat.sdl;
+    return ContentFormat.text;
+}
+
+/// Infer format from path extension when `content-ref` omits `format`.
+ContentFormat inferContentFormat(string refPath, string explicitFormat = "") {
+    if (explicitFormat.strip().length)
+        return parseContentFormat(explicitFormat);
+    auto ext = extension(refPath).toLower();
+    if (ext == ".cmk") return ContentFormat.centrmark;
+    if (ext == ".md" || ext == ".markdown") return ContentFormat.markdown;
+    if (ext == ".adoc" || ext == ".asciidoc") return ContentFormat.asciidoc;
+    if (ext == ".sdl") return ContentFormat.sdl;
     return ContentFormat.text;
 }
 
 /**
  * Load section body from a path. Formats are lightly normalized into plain
  * progressive-help text (not a full doc toolchain). Prefer keeping one
- * authoring source (e.g. AsciiDoc) and referencing it from help.sdl.
+ * authoring source (e.g. AsciiDoc or CentrMark) and referencing it from help.sdl.
  */
 string loadContentRef(string schemaDir, string refPath, ContentFormat fmt) {
     auto full = buildNormalizedPath(schemaDir, refPath);
@@ -41,6 +57,8 @@ string loadContentRef(string schemaDir, string refPath, ContentFormat fmt) {
             return markdownToPlain(raw);
         case asciidoc:
             return asciidocToPlain(raw);
+        case centrmark:
+            return centrmarkToPlain(raw);
     }
 }
 

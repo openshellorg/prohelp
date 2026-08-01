@@ -1,0 +1,24 @@
+---
+title "CentrMark content-ref example"
+status "Draft"
+---
+
+# CentrMark in prohelp
+
+Sections may `content-ref` a `.cmk` body. Prohelp renders a terminal-oriented
+plain-text subset: headings, lists, fenced code, `((` blockquotes), and
+`::: directives`.
+
+## Inline marks
+
+Status: @badge[color="success"](Stable). Contact @mention[openshellorg] for
+upstream CentrMark tooling.
+
+::: tip [title="Authoring"]
+Keep one CentrMark source and reference it from `help.sdl` with
+`format "centrmark"` (or rely on the `.cmk` extension).
+:::
+
+- Prefer `.cmk` for OpenShell-authored help bodies
+- Prefer Texinfo/man for GNU upstream docs
+- Prefer AsciiDoc when the same file feeds Antora

@@ -1,5 +1,8 @@
 module prohelp.config;
 
+import std.path;
+import std.string;
+import prohelp.document;
 import prohelp.parser;
 
 /// Schema source for a single intercept invocation.
@@ -32,11 +35,31 @@ public struct InterceptConfig {
     }
 }
 
+/// True when path looks like a prohelp schema (SDL or document formats).
+bool isHelpSchemaPath(string path) {
+    auto lower = path.toLower();
+    return lower.endsWith(".sdl")
+        || lower.endsWith(".md")
+        || lower.endsWith(".markdown")
+        || lower.endsWith(".adoc")
+        || lower.endsWith(".asciidoc")
+        || lower.endsWith(".cmk");
+}
+
+bool isSdlSchemaPath(string path) {
+    return path.toLower().endsWith(".sdl");
+}
+
 public Command loadCommand(const InterceptConfig config) {
     if (config.schemaContent.length > 0) {
-        return parseHelpSDLContent(config.schemaContent, config.schemaLabel);
+        if (isSdlSchemaPath(config.schemaLabel) || config.schemaLabel == "help.sdl"
+                || config.schemaLabel.startsWith("embedded")) {
+            return parseHelpSDLContent(config.schemaContent, config.schemaLabel);
+        }
+        return parseHelpDocumentContent(config.schemaContent, config.schemaLabel);
     }
 
     string path = config.schemaPath.length > 0 ? config.schemaPath : "help.sdl";
-    return parseHelpSDL(path);
+    if (isSdlSchemaPath(path)) return parseHelpSDL(path);
+    return parseHelpDocument(path);
 }

@@ -21,7 +21,7 @@ public class Section {
     string summary;
     string content;
     string contentRef;     // path relative to schema dir
-    string contentFormat;  // text | asciidoc | markdown | sdl
+    string contentFormat;  // text | asciidoc | markdown | centrmark | sdl
     bool inlineExpand = false;
     Section[] subsections;
     Option[] options;
@@ -134,7 +134,7 @@ private void resolveContentRefs(Command cmd) {
     void walk(Section sec) {
         if (sec.contentRef.length && sec.content.length == 0) {
             try {
-                auto fmt = parseContentFormat(sec.contentFormat.length ? sec.contentFormat : "text");
+                auto fmt = inferContentFormat(sec.contentRef, sec.contentFormat);
                 sec.content = loadContentRef(cmd.schemaDir, sec.contentRef, fmt);
             } catch (Exception e) {
                 stderr.writeln("prohelp warning: ", e.msg);
