@@ -11,6 +11,12 @@ help --path=/usr/bin/tar tar
 
 Resolution order:
 
-. Adjacent `help.sdl` / orientation pack
+. Adjacent `help.sdl` / `help.md` / `help.adoc` / `help.cmk` (or orientation pack)
 . OpenShellOrg xref:info::index.adoc[info] TUI or classic `info`/`man`
 . `<cmd> --help`
+
+Prefer the shell wrapper (`prohelp wrapper install`) over a bare `help` binary on PATH for bash/zsh/fish/nu/pwsh.
+Builtins win over PATH, so only a function named `help` intercepts reliably.
+See https://openshellorg.github.io/prohelp/shell-help.html[shell help wrapper docs].
+
+If no adjacent schema exists, prohelp nudges opening a feature request upstream (search link included) before falling back.

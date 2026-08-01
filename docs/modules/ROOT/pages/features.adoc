@@ -7,3 +7,6 @@
 * *Hierarchical Globbing (`*`)* — subtree extraction for scripts and agents (e.g. `tar ?:text operations *`).
 * *Multilingual Localization* — OS locale auto-detection with overrides (`?:de`, `?:es,i`).
 * *Sliding-scale Line Budgets* — strict screen boundaries (20-line Level 0 menu budget).
+* *Document schemas* — author progressive help as `help.md` / `help.adoc` / `help.cmk` with frontmatter, or keep canonical `help.sdl`.
+* *content-ref bodies* — pull section text from AsciiDoc, Markdown, or CentrMark (`.cmk`) sources.
+* *Essential metadata notices* — warn only when `homepage` / `docs` / `issues` are empty; nudge feature requests when a PATH command has no prohelp schema.

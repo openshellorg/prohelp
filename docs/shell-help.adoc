@@ -11,7 +11,7 @@ Shell `help` (bash/zsh builtins, PowerShell `Get-Help`) only documents the shell
 Prohelp installs a **shell function** named `help` that:
 
 . Documents **builtins** via the real shell help (with a one-time notice).
-. Documents **PATH commands** via prohelp / man / info / app `help.sdl`.
+. Documents **PATH commands** via prohelp / man / info / app `help.sdl` (or `help.md` / `help.adoc` / `help.cmk`).
 
 Putting `help.exe` on `PATH` does **not** override bash/zsh builtins. A function does.
 
@@ -53,3 +53,5 @@ https://github.com/openshellorg/prohelp/issues
 
 * `prohelp ? shell-help` — same content in the TUI / text help tree
 * `prohelp wrapper status|install|uninstall`
+* `prohelp ? meta` — schema metadata and Markdown/AsciiDoc authoring
+* Examples: `examples/help.md`, `examples/help.adoc`, `examples/content-centrmark.cmk`

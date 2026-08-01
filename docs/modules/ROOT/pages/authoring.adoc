@@ -1,0 +1,90 @@
+= Authoring schemas
+:description: Write progressive help as help.sdl or as Markdown/AsciiDoc/CentrMark with frontmatter.
+
+Prohelp accepts several schema forms. The in-memory model is always the same `Command` tree; only the on-disk authoring format changes.
+
+== SDL (`help.sdl`)
+
+Canonical structured schema. Nested `section` tags, `option` entries, locales, and `content-ref` for shared body files.
+
+[source,sdl]
+----
+command "myapp" {
+    title "My App"
+    summary "Does a thing"
+    homepage "https://example.com/myapp"
+    docs "https://example.com/myapp/docs"
+    issues "https://github.com/example/myapp/issues"
+
+    section "usage" {
+        summary "How to invoke"
+        content-ref "docs/usage.adoc" { format "asciidoc" }
+    }
+}
+----
+
+`content-ref` formats: `text`, `asciidoc` / `adoc`, `markdown` / `md`, `centrmark` / `cmk`, `sdl`.
+When `format` is omitted, the path extension (`.adoc`, `.md`, `.cmk`, `.sdl`) selects the converter.
+
+== Whole-document Markdown / AsciiDoc / CentrMark
+
+Author the **entire** schema as one of:
+
+* `help.md` / `help.markdown` — YAML frontmatter (`---` … `---`)
+* `help.adoc` / `help.asciidoc` — document title + `:attr:` header
+* `help.cmk` — CentrMark SDL frontmatter fence
+
+Headings become sections (`##` / `==` → top-level; deeper headings nest).
+
+[source,markdown]
+----
+---
+name: myapp
+title: My App
+summary: Does a thing
+homepage: https://example.com/myapp
+docs: https://example.com/myapp/docs
+issues: https://github.com/example/myapp/issues
+---
+
+# My App
+
+## Usage
+
+Run `myapp ?` for progressive help.
+----
+
+Preview:
+
+[source,shell]
+----
+prohelp examples/help.md ?
+prohelp examples/help.adoc ?
+----
+
+== Discovery (`prohelp --as-help` / shell `help`)
+
+Beside the binary (and one parent directory), prohelp looks for, in order:
+
+. `help.sdl`
+. `help.md` / `help.markdown`
+. `help.adoc` / `help.asciidoc`
+. `help.cmk`
+. `<cmd>.help.sdl` / `.help.md` / `.help.adoc` / `.help.cmk`
+
+== Essential metadata notices
+
+After loading a schema, prohelp warns only when these **essential** discovery fields are empty:
+
+* `homepage`
+* `docs`
+* `issues`
+
+If a field is set in SDL or frontmatter, it is never warned about.
+`summary`, `description`, `title`, and `issues-ai` do not trigger this notice.
+
+Each missing essential field gets a DuckDuckGo link seeded with the binary name/path.
+
+When **no** prohelp schema is found at all, prohelp prints a separate notice nudging a feature request upstream (also with a filled search link), then falls back to info / man / `--help`.
+
+Suppress notices with `PROHELP_QUIET=1`.

@@ -29,4 +29,8 @@ prohelp ?:i
 prohelp examples/tar.sdl ?
 prohelp examples/tar.sdl ? operations
 prohelp -f myapp/help.sdl ?:de,i
+prohelp examples/help.md ?
+prohelp examples/help.adoc ?
 ----
+
+See xref:authoring.adoc[Authoring schemas] for Markdown/AsciiDoc/CentrMark whole-document schemas and `content-ref` formats.
