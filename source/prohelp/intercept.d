@@ -11,6 +11,8 @@ import prohelp.parser;
 import prohelp.renderer;
 import prohelp.locale;
 import prohelp.pager;
+import prohelp.embedded;
+import prohelp.registration;
 
 // First-pass CLI Argument Interceptor
 public bool intercept(string[] args, InterceptConfig config = InterceptConfig.init) {
@@ -51,6 +53,8 @@ public bool intercept(string[] args, InterceptConfig config = InterceptConfig.in
         stderr.writeln(e.msg);
         return true;
     }
+
+    fillEmbeddedShellHelp(cmd);
 
     string schemaLabel = config.isConfigured
         ? (config.schemaLabel.length > 0 ? config.schemaLabel : "help.sdl")
@@ -113,6 +117,9 @@ public bool intercept(string[] args, InterceptConfig config = InterceptConfig.in
         rootSec.content = cmd.description;
         rootSec.subsections = cmd.sections;
         targetSection = rootSec;
+        if (!invokedAsHelpWrapper()) {
+            warnIfHelpWrapperMissing(isStdoutTTY());
+        }
     } else {
         targetSection = cmd.findSection(path);
         if (targetSection is null) {

@@ -8,6 +8,7 @@ This project maintains a structured release history with links to detailed relea
 
 ## Release History
 
+* **2026-08-01** — Shell `help` wrapper (`prohelp wrapper install`), registration warnings, standard command metadata (`title`/`homepage`/`docs`/`issues`/`issues-ai`), `content-ref` for AsciiDoc/Markdown bodies, and https://openshellorg.github.io/prohelp/shell-help.html.
 * **2026-07-25** — CI on push/PR (library + `prohelp` + `help`); release assets include both binaries for Linux/Windows/macOS.
 * **2026-07-25** — Moved to OpenShellOrg (`openshellorg/prohelp`). Added orientation record schema, global `help` dispatcher binary, and crosslinks to `about` / `info` / `man`. Origin: Dev-Centr.
 * **2026-05-27** — Relicense under GPL-3.0-or-later (replacing unstated/MIT references).

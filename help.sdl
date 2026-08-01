@@ -1,6 +1,10 @@
 command "prohelp" {
-    summary "Progressive CLI help specification and preview tool"
-    description "A professional-grade, progressive terminal help system: schema-driven documentation with screen budgets, locales, and an optional TUI. The prohelp executable previews help trees; the library intercepts help requests in host applications."
+    title "Prohelp Progressive CLI Help"
+    summary "Progressive CLI help specification, library, and dispatcher"
+    description "Schema-driven progressive help for CLI apps, plus a shell `help` wrapper that extends builtins to PATH commands (man/info/help.sdl)."
+    homepage "https://github.com/openshellorg/prohelp"
+    docs "https://openshellorg.github.io/prohelp/shell-help.html"
+    issues "https://github.com/openshellorg/prohelp/issues"
 
     locale "de" {
         summary "Progressives CLI-Hilfesystem"
@@ -12,14 +16,27 @@ command "prohelp" {
         description "Una utilidad de desarrollo y biblioteca Dlang que intercepta argumentos de ayuda y genera documentación progresiva y estructurada."
     }
 
+    section "shell-help" {
+        summary "Extend shell `help` to PATH binaries (required post-install)"
+        content-ref "docs/shell-help.adoc" {
+            format "asciidoc"
+        }
+    }
+
     section "usage" {
         summary "Integration syntax and execution patterns"
-        content "prohelp [schema.sdl] [help|?][:[locale][,mode]] [path...] [*]"
+        content "prohelp [schema.sdl] [help|?][:[locale][,mode]] [path...] [*]\nprohelp wrapper status|install|uninstall [--shell=...]\nprohelp --as-help [command]"
 
         example "Built-in progressive help" "prohelp ?"
+        example "Shell-help setup section" "prohelp ? shell-help"
+        example "Install help() wrapper" "prohelp wrapper install"
         example "Preview another command's help schema" "prohelp examples/tar.sdl ?"
         example "German Interactive TUI Viewport" "prohelp ?:de,i"
-        example "Retrieve Text subtree as clean Markdown" "prohelp ?:text commands *"
+    }
+
+    section "wrapper" {
+        summary "Shell function install for bash/zsh/fish/nu/pwsh (not cmd)"
+        content "Registers a `help` function that keeps builtin help for builtins and routes PATH topics through prohelp. See: prohelp ? shell-help\nWeb: https://openshellorg.github.io/prohelp/shell-help.html"
     }
 
     section "preview" {
@@ -28,6 +45,11 @@ command "prohelp" {
 
         example "Preview tar help from a schema file" "prohelp examples/tar.sdl ?"
         example "Drill into a previewed schema section" "prohelp -f myapp/help.sdl ? operations"
+    }
+
+    section "meta" {
+        summary "Standard metadata fields for every prohelp command schema"
+        content "Required/recommended command fields:\n  name (binary), title (full app name), summary, description (content),\n  homepage, docs, issues, issues-ai (optional AI report UI).\nSections may use inline `content` or `content-ref \"path\" { format \"asciidoc\" }` to reuse web/docs sources at runtime."
     }
 
     section "navigation" {

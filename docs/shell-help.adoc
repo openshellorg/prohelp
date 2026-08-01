@@ -1,0 +1,55 @@
+= Shell `help` wrapper
+:description: Why and how Prohelp extends the shell help command for PATH binaries.
+:navtitle: Shell help wrapper
+
+Prohelp extends the shell's `help` command so it covers **programs on your PATH**, not only shell builtins — and can route into man/info/`help.sdl` backends.
+
+== Why
+
+Shell `help` (bash/zsh builtins, PowerShell `Get-Help`) only documents the shell itself.
+`man` and `info` already know about installed tools, but `help` never became their front door.
+Prohelp installs a **shell function** named `help` that:
+
+. Documents **builtins** via the real shell help (with a one-time notice).
+. Documents **PATH commands** via prohelp / man / info / app `help.sdl`.
+
+Putting `help.exe` on `PATH` does **not** override bash/zsh builtins. A function does.
+
+cmd.exe is intentionally unsupported.
+
+== Quick setup
+
+[source,shell]
+----
+# install prohelp on PATH first, then:
+prohelp wrapper install          # detects bash/zsh/fish/nu/pwsh
+prohelp wrapper status
+# reload the shell, then:
+help tar
+help printf                      # builtin path
+----
+
+Web copy of this page: https://openshellorg.github.io/prohelp/shell-help.html
+
+== What packages must do
+
+If you package Prohelp for a distro or installer:
+
+* Install the `prohelp` binary on `PATH`.
+* Run `prohelp wrapper install` for interactive user shells **or** ship equivalent rc snippets.
+* Shipping the binary without the wrapper is an **incomplete install**.
+
+Users who find `prohelp` without a working `help` wrapper should report it to the **package maintainer**, and can open an upstream issue with the package name at:
+
+https://github.com/openshellorg/prohelp/issues
+
+== Escape hatches
+
+* `builtin help TOPIC` / `Get-Help TOPIC` — bypass the wrapper.
+* `PROHELP_QUIET=1` — suppress notices.
+* `prohelp wrapper uninstall`
+
+== See also
+
+* `prohelp ? shell-help` — same content in the TUI / text help tree
+* `prohelp wrapper status|install|uninstall`

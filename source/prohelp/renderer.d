@@ -200,16 +200,36 @@ public string renderSectionBox(Command cmd, Section sec, string[] path, string l
 
     auto sb = appender!string();
 
-    // Top border
     int topDashLen = (contentWidth - cast(int)stripStyles(title).length) / 2;
     if (topDashLen < 2) topDashLen = 2;
     string topDashes = replicate("─", topDashLen);
     string topBorder = "┌─" ~ topDashes ~ title ~ topDashes;
-    // pad out to exact length
     int topRemaining = boxWidth - 1 - cast(int)stripStyles(topBorder).length;
     if (topRemaining > 0) topBorder ~= replicate("─", topRemaining);
     topBorder ~= "┐";
     sb.put(parseColors("<color=dim>" ~ topBorder ~ "</>\n", enableColor));
+
+    // Project metadata near the top (docs / repo / issues)
+    if (path.length == 0) {
+        string[] metaLines;
+        if (cmd.title.length && cmd.title != cmd.name)
+            metaLines ~= "App: " ~ cmd.title ~ "  (" ~ cmd.name ~ ")";
+        if (cmd.docsUrl.length) metaLines ~= "Docs: " ~ cmd.docsUrl;
+        if (cmd.homepage.length) metaLines ~= "Repo: " ~ cmd.homepage;
+        if (cmd.issuesUrl.length) metaLines ~= "Issues: " ~ cmd.issuesUrl;
+        if (cmd.issuesAiUrl.length) metaLines ~= "Report UI: " ~ cmd.issuesAiUrl;
+        if (metaLines.length) {
+            foreach (ml; metaLines) {
+                string[] wrapped = wrapText("<color=cyan>" ~ ml ~ "</>", contentWidth);
+                foreach (line; wrapped) {
+                    int pad = contentWidth - cast(int)stripStyles(line).length;
+                    string formatted = "│ " ~ line ~ replicate(" ", pad) ~ " │\n";
+                    sb.put(parseColors(formatted, enableColor));
+                }
+            }
+            sb.put(parseColors("<color=dim>│ " ~ replicate(" ", contentWidth) ~ " │</>\n", enableColor));
+        }
+    }
 
     // Summary Section
     if (summary.length > 0) {

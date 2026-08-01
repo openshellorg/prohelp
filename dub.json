@@ -19,7 +19,7 @@
             "targetName": "prohelp",
             "mainSourceFile": "source/app.d",
             "excludedSourceFiles": ["source/help_main.d"],
-            "stringImportPaths": ["."],
+            "stringImportPaths": [".", "docs"],
             "versions": ["ProhelpExecutable"]
         },
         {
@@ -28,8 +28,8 @@
             "targetName": "help",
             "mainSourceFile": "source/help_main.d",
             "excludedSourceFiles": ["source/app.d"],
-            "stringImportPaths": ["."],
-            "versions": ["ProhelpHelpBinary"]
+            "stringImportPaths": [".", "docs"],
+            "versions": ["ProhelpHelpBinary", "ProhelpExecutable"]
         }
     ]
 }

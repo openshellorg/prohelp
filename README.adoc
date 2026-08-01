@@ -4,15 +4,17 @@ v0.2.0, 2026-07-25
 :toc:
 :homepage: link:https://github.com/openshellorg/prohelp[openshellorg/prohelp]
 
-Moved from Dev-Centr (`dev-centr/prohelp`) into OpenShellOrg as the reusable progressive-help library and global `help` entry point.
+Moved from Dev-Centr (`dev-centr/prohelp`) into OpenShellOrg as the reusable progressive-help library and CLI.
 
-The standard command-line help interface (`--help` or `help`) is broken. It dumps massive walls of unreadable text.
+The standard command-line help interface (`--help` or `help`) is broken. It dumps massive walls of unreadable text — and shell `help` refuses to cover PATH binaries.
 
-**Prohelp** is a progressive help specification and reference library: a *professional-grade*, budget-enforced terminal documentation system with Unicode box panels, locale-aware rendering, and an optional full-screen TUI. The official name is intentionally short — *progressive* is the idea; *professional* is the experience.
+**Prohelp** is a progressive help specification and reference library: a *professional-grade*, budget-enforced terminal documentation system with Unicode box panels, locale-aware rendering, and an optional full-screen TUI. It also installs a shell **`help` function** (bash/zsh/fish/nu/pwsh — not cmd) that keeps builtin help for builtins and routes PATH topics through prohelp/man/info.
+
+Docs for the wrapper: https://openshellorg.github.io/prohelp/shell-help.html
 
 Prohelp is **not** a full command-line application framework. It solves progressive *help* only. For building CLI tools, use a framework and wire Prohelp in:
 
-* **D (recommended):** link:https://github.com/openshellorg/prohelp-cli[prohelp-cli] with link:https://opendlang.org/library/arsd.cli.html[arsd.cli] (or another D CLI router) — parsing and routing stay in the framework; help stays in Prohelp.
+* **D:** add the `prohelp` library and call `intercept` (see also examples / future arsd.cli glue in-tree).
 * **C / BetterC:** the `prohelp` library's C-compatible API (planned) — combine with your existing argv parser.
 * **Other languages:** consume Prohelp through FFI and pair it with your ecosystem's CLI framework (Click, clap, cobra, etc.).
 
@@ -71,21 +73,29 @@ prohelp -f myapp/help.sdl ?:de,i
 
 == Integration API
 
-=== D applications (prefer prohelp-cli)
+=== Shell `help` wrapper (recommended)
 
-For new D command-line tools, prefer link:https://github.com/openshellorg/prohelp-cli[prohelp-cli] integrated with a CLI router such as link:https://opendlang.org/library/arsd.cli.html[arsd.cli]. See the prohelp-cli repository for how execution routing and progressive help cooperate.
-
-=== Global `help` command
-
-Install the `help` binary (DUB config `help`) onto `PATH` to open progressive help for any command:
+PATH `help.exe` does **not** override bash/zsh builtins. Install a shell function instead:
 
 [source,shell]
 ----
+prohelp wrapper install          # bash/zsh/fish/nu/pwsh — not cmd
+prohelp wrapper status
+# reload shell, then:
 help tar
-help --path=/usr/bin/tar tar
 ----
 
-Resolution order: adjacent `help.sdl` / orientation pack → OpenShellOrg `info` TUI or classic `info`/`man` → `<cmd> --help`.
+See link:https://openshellorg.github.io/prohelp/shell-help.html[shell-help.html] and `prohelp ? shell-help`.
+Incomplete packages that ship the binary without the wrapper should be reported to the maintainer (and upstream issues are welcome with the package name).
+
+=== Dispatcher without the wrapper
+
+[source,shell]
+----
+prohelp --as-help tar
+----
+
+A legacy `help` binary (DUB config `help`) still builds for explicit calls; prefer the function wrapper.
 
 === Drop-in intercept (library)
 
@@ -101,6 +111,7 @@ void main(string[] args) {
 }
 ----
 
+Standard schema metadata (shown near the top of help pages): `title`, `homepage`, `docs`, `issues`, `issues-ai`, plus `content` or `content-ref` for shared AsciiDoc/Markdown sources.
 == Changelog
 
 For a full release history and details of specifications, please see the link:CHANGELOG.md[Changelog].

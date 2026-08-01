@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prohelp — Shell help wrapper</title>
+  <style>
+    :root { color-scheme: dark light; --fg: #e4e4e7; --muted: #a1a1aa; --bg: #09090b; --card: #18181b; --accent: #38bdf8; --warn: #fbbf24; }
+    @media (prefers-color-scheme: light) {
+      :root { --fg: #18181b; --muted: #52525b; --bg: #fafafa; --card: #fff; --accent: #0284c8; }
+    }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.55; }
+    main { max-width: 42rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+    h1 { font-size: 1.75rem; margin: 0 0 0.5rem; }
+    h2 { font-size: 1.15rem; margin: 2rem 0 0.75rem; }
+    p, li { color: var(--fg); }
+    .muted { color: var(--muted); }
+    .card { background: var(--card); border: 1px solid #27272a; border-radius: 12px; padding: 1rem 1.15rem; margin: 1rem 0; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; }
+    pre { background: #09090b; color: #e4e4e7; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    a { color: var(--accent); }
+    .warn { border-left: 3px solid var(--warn); padding-left: 0.85rem; }
+    ol { padding-left: 1.25rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="muted"><a href="./">← Prohelp</a></p>
+    <h1>Shell <code>help</code> wrapper</h1>
+    <p class="muted">Why Prohelp extends <code>help</code> to PATH binaries — and how to configure it after install.</p>
+
+    <div class="card warn">
+      <strong>Incomplete package install?</strong>
+      If <code>prohelp</code> is on your PATH but <code>help tar</code> still only knows shell builtins,
+      the package installer skipped the shell wrapper. That is a packaging bug — tell the maintainer,
+      and you can file upstream details at
+      <a href="https://github.com/openshellorg/prohelp/issues">openshellorg/prohelp issues</a>.
+    </div>
+
+    <h2>Why</h2>
+    <p>
+      Shell <code>help</code> documents the shell. <code>man</code> / <code>info</code> document programs.
+      Historically <code>help</code> never became the front door for PATH tools. Prohelp installs a
+      <strong>shell function</strong> named <code>help</code> that keeps builtin help for builtins and
+      routes everything else through prohelp (and man/info / <code>help.sdl</code> when available).
+    </p>
+    <p>
+      Dropping <code>help.exe</code> on <code>PATH</code> does <em>not</em> override bash/zsh builtins.
+      A function does. <strong>cmd.exe is not supported.</strong>
+    </p>
+
+    <h2>Setup</h2>
+    <pre>prohelp wrapper install
+prohelp wrapper status
+# reload the shell
+help tar
+help printf</pre>
+
+    <h2>What packages must do</h2>
+    <ol>
+      <li>Put <code>prohelp</code> on <code>PATH</code>.</li>
+      <li>Run <code>prohelp wrapper install</code> (or ship equivalent rc snippets) for interactive shells.</li>
+      <li>Treat “binary only, no wrapper” as an incomplete install.</li>
+    </ol>
+
+    <h2>Escape hatches</h2>
+    <ul>
+      <li><code>builtin help TOPIC</code> / <code>Get-Help TOPIC</code></li>
+      <li><code>PROHELP_QUIET=1</code></li>
+      <li><code>prohelp wrapper uninstall</code></li>
+    </ul>
+
+    <p class="muted">Also available in-terminal: <code>prohelp ? shell-help</code></p>
+    <p><a href="https://github.com/openshellorg/prohelp">Repository</a> ·
+       <a href="https://github.com/openshellorg/prohelp/issues">Issues</a></p>
+  </main>
+</body>
+</html>

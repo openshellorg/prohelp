@@ -20,6 +20,10 @@ build/
 !examples/
 !changelog-details/
 !docs/
+!docs/**
+!docs/**/*.adoc
+!site/public/
+!site/public/**
 !.github/
 !.github/workflows/
 
@@ -49,5 +53,7 @@ build/
 !site/tsconfig*.json
 !site/vite.config.ts
 !site/index.html
+!site/public/
+!site/public/**
 !site/src/
 !site/src/**/*
