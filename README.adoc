@@ -1,10 +1,33 @@
-= Prohelp: Progressive CLI Help
-Open Shell Organization <https://github.com/openshellorg>
-v0.2.0, 2026-07-25
-:toc:
-:homepage: link:https://github.com/openshellorg/prohelp[openshellorg/prohelp]
+ifndef::env-github[:icons: font]
+:toc: preamble
+:toclevels: 2
+:sectanchors:
 
-Moved from Dev-Centr (`dev-centr/prohelp`) into OpenShellOrg as the reusable progressive-help library and CLI.
+ifndef::env-github[]
+image:https://img.shields.io/github/contributors/openshellorg/prohelp.svg?style=for-the-badge[Contributors,link=https://github.com/openshellorg/prohelp/graphs/contributors]
+image:https://img.shields.io/github/forks/openshellorg/prohelp.svg?style=for-the-badge[Forks,link=https://github.com/openshellorg/prohelp/network/members]
+image:https://img.shields.io/github/stars/openshellorg/prohelp.svg?style=for-the-badge[Stars,link=https://github.com/openshellorg/prohelp/stargazers]
+image:https://img.shields.io/github/issues/openshellorg/prohelp.svg?style=for-the-badge[Issues,link=https://github.com/openshellorg/prohelp/issues]
+image:https://img.shields.io/github/license/openshellorg/prohelp.svg?style=for-the-badge[License,link=https://github.com/openshellorg/prohelp/blob/main/LICENSE]
+endif::[]
+
+ifdef::env-github[]
+image:https://img.shields.io/github/contributors/openshellorg/prohelp.svg?style=for-the-badge[Contributors]
+image:https://img.shields.io/github/forks/openshellorg/prohelp.svg?style=for-the-badge[Forks]
+image:https://img.shields.io/github/stars/openshellorg/prohelp.svg?style=for-the-badge[Stars]
+image:https://img.shields.io/github/issues/openshellorg/prohelp.svg?style=for-the-badge[Issues]
+image:https://img.shields.io/github/license/openshellorg/prohelp.svg?style=for-the-badge[License]
+endif::[]
+
+= Prohelp: Progressive CLI Help
+
+Progressive & Professional Help CLI Interceptor and Library.
+
+link:https://openshellorg.github.io/prohelp/[Explore the docs] ·
+link:https://github.com/openshellorg/prohelp/issues[Report Bug] ·
+link:https://github.com/openshellorg/prohelp/issues[Request Feature]
+
+== About The Project
 
 The standard command-line help interface (`--help` or `help`) is broken. It dumps massive walls of unreadable text — and shell `help` refuses to cover PATH binaries.
 
@@ -12,46 +35,25 @@ The standard command-line help interface (`--help` or `help`) is broken. It dump
 
 Docs for the wrapper: https://openshellorg.github.io/prohelp/shell-help.html
 
-Prohelp is **not** a full command-line application framework. It solves progressive *help* only. For building CLI tools, use a framework and wire Prohelp in:
+Prohelp is **not** a full command-line application framework. It solves progressive *help* only. For building CLI tools, use a framework and wire Prohelp in.
 
-* **D:** add the `prohelp` library and call `intercept` (see also examples / future arsd.cli glue in-tree).
-* **C / BetterC:** the `prohelp` library's C-compatible API (planned) — combine with your existing argv parser.
-* **Other languages:** consume Prohelp through FFI and pair it with your ecosystem's CLI framework (Click, clap, cobra, etc.).
-
-The `prohelp` preview executable ships with built-in help and can interpret any `help.sdl` schema for authoring and testing before you bake help into a product build.
-
-**Prohelp** enforces *progressive information disclosure* by organizing CLI documentation into a clean conceptual hierarchy.
-
-It intercepts user help requests, automatically resolves host system locales, renders structured progressive layouts using 24-bit TrueColor and Unicode box-drawing visual zoning, and bundles an opt-in full-screen interactive Terminal browser.
-
-== Key Features
-
-* **Default Static Box Zoning**: Generates gorgeous, Unicode-boxed information panels that are fully compatible with pipes (`|`), redirects (`>`), and log files.
-* **Opt-in TUI Viewport**: A zero-dependency, full-screen terminal browser (`?:i` or `?:interactive`) with real-time alphanumeric filter search, keyboard navigation, Shift-toggled screen selection, and `Ctrl+C` dynamic Markdown clipboard copying.
-* **1-Line Integration API**: First-pass argument filtering that drops into standard application `main` entries with a single line of code.
-* **Hierarchical Globbing (`*`)**: Supports subtree glob extraction (e.g. `tar ?:text operations *`), enabling scripts and AI agents to fetch highly targeted documentation chunks on demand without context window clutter.
-* **Multilingual Localization**: Native OS locale auto-detection with support for explicit overrides (e.g., `?:de` or `?:es,i`).
-* **Sliding-scale Line Budgets**: Enforces strict screen boundaries during development (20-line Level 0 menu budget) to ensure zero scrolling overhead.
-
-== Getting Started
+== Installation
 
 === Prerequisites
 
 * link:https://dlang.org/[D Compiler (DMD or LDC)]
 * link:https://dub.pm/[DUB (D Package Manager)]
 
-=== Compilation
-
-To build the prohelp preview CLI (with built-in `help.sdl` embedded at compile time):
+=== Build
 
 [source,powershell]
 ----
 dub build -c executable
 ----
 
-=== CLI usage
+== Usage
 
-The `prohelp` executable uses the prohelp library on itself. Built-in help is always available:
+=== CLI usage
 
 [source,powershell]
 ----
@@ -62,8 +64,6 @@ prohelp ?:i
 
 === Preview mode (schema interpreter)
 
-To preview another application's `help.sdl`, pass the schema path first. Prohelp virtualizes the schema's `command` name (for example `tar`) for rendering and navigation:
-
 [source,powershell]
 ----
 prohelp examples/tar.sdl ?
@@ -71,11 +71,7 @@ prohelp examples/tar.sdl ? operations
 prohelp -f myapp/help.sdl ?:de,i
 ----
 
-== Integration API
-
 === Shell `help` wrapper (recommended)
-
-PATH `help.exe` does **not** override bash/zsh builtins. Install a shell function instead:
 
 [source,shell]
 ----
@@ -85,21 +81,7 @@ prohelp wrapper status
 help tar
 ----
 
-See link:https://openshellorg.github.io/prohelp/shell-help.html[shell-help.html] and `prohelp ? shell-help`.
-Incomplete packages that ship the binary without the wrapper should be reported to the maintainer (and upstream issues are welcome with the package name).
-
-=== Dispatcher without the wrapper
-
-[source,shell]
-----
-prohelp --as-help tar
-----
-
-A legacy `help` binary (DUB config `help`) still builds for explicit calls; prefer the function wrapper.
-
 === Drop-in intercept (library)
-
-For minimal integration or non-D languages via FFI, add `prohelp` as a dependency and call `intercept` before your existing argument parser:
 
 [source,d]
 ----
@@ -111,22 +93,24 @@ void main(string[] args) {
 }
 ----
 
-Standard schema metadata (shown near the top of help pages): `title`, `homepage`, `docs`, `issues`, `issues-ai`, plus `content` or `content-ref` for shared AsciiDoc/Markdown/CentrMark (`.cmk`) sources.
+== Key Features
 
-You may also author the **entire** schema as `help.md`, `help.adoc`, or `help.cmk` with frontmatter (YAML / AsciiDoc attributes / CentrMark SDL). Headings become the section tree. Place the file beside the binary (discovered by `prohelp --as-help`) or pass it explicitly: `prohelp examples/help.md ?`.
+* **Default Static Box Zoning**: Generates gorgeous, Unicode-boxed information panels compatible with pipes, redirects, and log files.
+* **Opt-in TUI Viewport**: Full-screen terminal browser with filter search and keyboard navigation.
+* **1-Line Integration API**: Drop into standard application `main` entries with a single line of code.
+* **Hierarchical Globbing (`*`)**: Subtree glob extraction for targeted documentation chunks.
+* **Multilingual Localization**: Native OS locale auto-detection with explicit overrides.
+* **Sliding-scale Line Budgets**: Enforces strict screen boundaries during development.
 
-When essential discovery fields (`homepage`, `docs`, `issues`) are empty after parsing, prohelp prints a short notice with a DuckDuckGo link seeded with the binary name/path. Fields that are set in `help.sdl` or document frontmatter never trigger a warning. When a command has no prohelp schema at all, prohelp nudges a feature request the same way.
-
-== Changelog
-
-For a full release history and details of specifications, please see the link:CHANGELOG.md[Changelog].
+See link:CHANGELOG.md[Changelog].
 
 == License
 
 Prohelp is licensed under the link:LICENSE[Prohelp Copyleft and Disclosure License (PCDL) Version 1.0].
 
-This is a strong copyleft license with a mandatory downstream disclosure rider. You may copy, modify, and distribute this software provided that:
-1. Any derivative works are licensed under the exact same PCDL Version 1.0 terms (strong copyleft).
-2. You publicly disclose the existence of your derivative work and notify the original project (Parent Project) at link:https://github.com/openshellorg/prohelp[openshellorg/prohelp] within 30 days of release or deployment.
+== Contact
 
-See the link:LICENSE[LICENSE] file for full legal terms.
+Open Shell Org — openshell@devcentr.org
+
+* Project: https://github.com/openshellorg/prohelp
+* Site: https://openshellorg.github.io
