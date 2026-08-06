@@ -9,9 +9,12 @@ import std.stdio;
 import std.string;
 import prohelp.registration;
 
+private string homeDir() {
+    return environment.get("HOME", environment.get("USERPROFILE", "."));
+}
+
 private string configDir() {
-    auto home = environment.get("HOME", environment.get("USERPROFILE", "."));
-    return buildPath(home, ".config", "prohelp");
+    return buildPath(homeDir(), ".config", "prohelp");
 }
 
 private string snippetPath(string shell) {
@@ -20,6 +23,36 @@ private string snippetPath(string shell) {
 
 private string markerPath() {
     return buildPath(configDir(), "wrapper-installed");
+}
+
+/// Nushell config directory (not always ~/.config on Windows).
+private string nushellConfigDir() {
+    if (auto xdg = environment.get("XDG_CONFIG_HOME")) {
+        if (xdg.length)
+            return buildPath(xdg, "nushell");
+    }
+    version (Windows) {
+        auto appdata = environment.get("APPDATA");
+        if (appdata.length)
+            return buildPath(appdata, "nushell");
+    }
+    return buildPath(homeDir(), ".config", "nushell");
+}
+
+/// PowerShell 7+ profile path (Windows Documents vs XDG).
+private string pwshProfilePath() {
+    version (Windows) {
+        auto home = homeDir();
+        auto docs = environment.get("USERPROFILE", home);
+        // Prefer PowerShell 7 profile under Documents when present.
+        auto ps7 = buildPath(docs, "Documents", "PowerShell", "Microsoft.PowerShell_profile.ps1");
+        auto winPs = buildPath(docs, "Documents", "WindowsPowerShell", "Microsoft.PowerShell_profile.ps1");
+        if (exists(dirName(ps7)) || !exists(dirName(winPs)))
+            return ps7;
+        return winPs;
+    } else {
+        return buildPath(homeDir(), ".config", "powershell", "Microsoft.PowerShell_profile.ps1");
+    }
 }
 
 private string bashZshFunction() {
@@ -104,6 +137,12 @@ EOS";
 }
 
 private string detectShell() {
+    // Nushell often keeps $SHELL as bash/zsh; prefer explicit nu markers.
+    if (environment.get("NU_VERSION", "").length
+        || environment.get("NU_LIB_DIRS", "").length
+        || environment.get("NU_PLUGIN_DIRS", "").length)
+        return "nu";
+
     auto sh = environment.get("SHELL", "");
     auto base = baseName(sh).toLower();
     if (base.canFind("zsh")) return "zsh";
@@ -115,12 +154,12 @@ private string detectShell() {
 }
 
 private string rcPathFor(string shell) {
-    auto home = environment.get("HOME", environment.get("USERPROFILE", "."));
+    auto home = homeDir();
     if (shell == "bash") return buildPath(home, ".bashrc");
     if (shell == "zsh") return buildPath(home, ".zshrc");
     if (shell == "fish") return buildPath(home, ".config", "fish", "config.fish");
-    if (shell == "nu") return buildPath(home, ".config", "nushell", "config.nu");
-    if (shell == "pwsh") return buildPath(home, ".config", "powershell", "Microsoft.PowerShell_profile.ps1");
+    if (shell == "nu") return buildPath(nushellConfigDir(), "config.nu");
+    if (shell == "pwsh") return pwshProfilePath();
     return buildPath(home, ".bashrc");
 }
 
@@ -135,7 +174,7 @@ private string sourceLine(string shell, string snippet) {
     if (shell == "fish")
         return "\n# >>> prohelp wrapper >>>\ntest -f " ~ snippet ~ "; and source " ~ snippet ~ "\n# <<< prohelp wrapper <<<\n";
     if (shell == "nu")
-        return "\n# >>> prohelp wrapper >>>\nsource " ~ snippet ~ "\n# <<< prohelp wrapper <<<\n";
+        return "\n# >>> prohelp wrapper >>>\nif ('" ~ snippet ~ "' | path exists) { source '" ~ snippet ~ "' }\n# <<< prohelp wrapper <<<\n";
     if (shell == "pwsh")
         return "\n# >>> prohelp wrapper >>>\nif (Test-Path '" ~ snippet ~ "') { . '" ~ snippet ~ "' }\n# <<< prohelp wrapper <<<\n";
     return "\n# >>> prohelp wrapper >>>\n[ -f \"" ~ snippet ~ "\" ] && . \"" ~ snippet ~ "\"\n# <<< prohelp wrapper <<<\n";

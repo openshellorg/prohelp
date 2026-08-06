@@ -8,6 +8,7 @@ This project maintains a structured release history with links to detailed relea
 
 ## Release History
 
+* **2026-08-06** — Nushell: use `%APPDATA%\nushell` (Windows) / `XDG_CONFIG_HOME` when set; detect via `NU_VERSION` / `NU_LIB_DIRS` even when `$SHELL` is still bash/zsh. Safer `source` guard in `config.nu`. PowerShell profile prefers Windows Documents paths.
 * **2026-08-06** — Windows: link `user32` for clipboard APIs (`OpenClipboard` et al.) so consumer apps link cleanly under DMD/LLD.
 * **2026-08-01** — Whole-document schemas: author prohelp as `help.md` / `help.adoc` / `help.cmk` with frontmatter; headings → sections. Warn on missing metadata and nudge feature requests (search links) when a command has no prohelp docs.
 * **2026-08-01** — `content-ref` CentrMark (`.cmk`) support with terminal plain-text rendering; format inferred from `.cmk` / `.md` / `.adoc` / `.sdl` when omitted.
