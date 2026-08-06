@@ -7,6 +7,7 @@ import std.array;
 
 version(Windows) {
     import core.sys.windows.windows;
+    pragma(lib, "user32");
 
     extern(Windows) BOOL OpenClipboard(HWND hWndNewOwner);
     extern(Windows) BOOL CloseClipboard();

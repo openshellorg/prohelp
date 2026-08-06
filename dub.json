@@ -8,6 +8,10 @@
     "dependencies": {
         "sdlang-d": "~>0.10.6"
     },
+    "libs-windows": ["user32"],
+    "libs-windows-x86_64": ["user32"],
+    "libs-windows-x86": ["user32"],
+
     "configurations": [
         {
             "name": "library",

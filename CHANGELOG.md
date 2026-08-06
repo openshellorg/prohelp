@@ -8,6 +8,7 @@ This project maintains a structured release history with links to detailed relea
 
 ## Release History
 
+* **2026-08-06** — Windows: link `user32` for clipboard APIs (`OpenClipboard` et al.) so consumer apps link cleanly under DMD/LLD.
 * **2026-08-01** — Whole-document schemas: author prohelp as `help.md` / `help.adoc` / `help.cmk` with frontmatter; headings → sections. Warn on missing metadata and nudge feature requests (search links) when a command has no prohelp docs.
 * **2026-08-01** — `content-ref` CentrMark (`.cmk`) support with terminal plain-text rendering; format inferred from `.cmk` / `.md` / `.adoc` / `.sdl` when omitted.
 * **2026-08-01** — Shell `help` wrapper (`prohelp wrapper install`), registration warnings, standard command metadata (`title`/`homepage`/`docs`/`issues`/`issues-ai`), `content-ref` for AsciiDoc/Markdown bodies, and https://openshellorg.github.io/prohelp/shell-help.html.
