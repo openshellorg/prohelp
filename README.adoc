@@ -3,21 +3,12 @@ ifndef::env-github[:icons: font]
 :toclevels: 2
 :sectanchors:
 
-ifndef::env-github[]
+[[readme-top]]
 image:https://img.shields.io/github/contributors/openshellorg/prohelp.svg?style=for-the-badge[Contributors,link=https://github.com/openshellorg/prohelp/graphs/contributors]
 image:https://img.shields.io/github/forks/openshellorg/prohelp.svg?style=for-the-badge[Forks,link=https://github.com/openshellorg/prohelp/network/members]
 image:https://img.shields.io/github/stars/openshellorg/prohelp.svg?style=for-the-badge[Stars,link=https://github.com/openshellorg/prohelp/stargazers]
 image:https://img.shields.io/github/issues/openshellorg/prohelp.svg?style=for-the-badge[Issues,link=https://github.com/openshellorg/prohelp/issues]
 image:https://img.shields.io/github/license/openshellorg/prohelp.svg?style=for-the-badge[License,link=https://github.com/openshellorg/prohelp/blob/main/LICENSE]
-endif::[]
-
-ifdef::env-github[]
-image:https://img.shields.io/github/contributors/openshellorg/prohelp.svg?style=for-the-badge[Contributors]
-image:https://img.shields.io/github/forks/openshellorg/prohelp.svg?style=for-the-badge[Forks]
-image:https://img.shields.io/github/stars/openshellorg/prohelp.svg?style=for-the-badge[Stars]
-image:https://img.shields.io/github/issues/openshellorg/prohelp.svg?style=for-the-badge[Issues]
-image:https://img.shields.io/github/license/openshellorg/prohelp.svg?style=for-the-badge[License]
-endif::[]
 
 = Prohelp: Progressive CLI Help
 
@@ -37,6 +28,8 @@ Docs for the wrapper: https://openshellorg.github.io/prohelp/shell-help.html
 
 Prohelp is **not** a full command-line application framework. It solves progressive *help* only. For building CLI tools, use a framework and wire Prohelp in.
 
+link:#readme-top[back to top]
+
 == Installation
 
 === Prerequisites
@@ -50,6 +43,8 @@ Prohelp is **not** a full command-line application framework. It solves progress
 ----
 dub build -c executable
 ----
+
+link:#readme-top[back to top]
 
 == Usage
 
@@ -93,6 +88,8 @@ void main(string[] args) {
 }
 ----
 
+link:#readme-top[back to top]
+
 == Key Features
 
 * **Default Static Box Zoning**: Generates gorgeous, Unicode-boxed information panels compatible with pipes, redirects, and log files.
@@ -108,9 +105,13 @@ See link:CHANGELOG.md[Changelog].
 
 Prohelp is licensed under the link:LICENSE[Prohelp Copyleft and Disclosure License (PCDL) Version 1.0].
 
+link:#readme-top[back to top]
+
 == Contact
 
 Open Shell Org — openshell@devcentr.org
 
 * Project: https://github.com/openshellorg/prohelp
 * Site: https://openshellorg.github.io
+
+link:#readme-top[back to top]
