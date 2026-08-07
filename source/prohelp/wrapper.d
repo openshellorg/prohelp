@@ -8,6 +8,7 @@ import std.process;
 import std.stdio;
 import std.string;
 import prohelp.registration;
+import prohelp.console;
 
 private string homeDir() {
     return environment.get("HOME", environment.get("USERPROFILE", "."));
@@ -181,9 +182,10 @@ private string sourceLine(string shell, string snippet) {
 }
 
 public int wrapperStatus() {
+    prepareConsoleOutput();
     auto s = probeRegistration();
     writeln("prohelp wrapper status");
-    writeln("────────────────────────");
+    writeln(maybeAsciiBoxes(replicate(boxChars().h, 24)));
     writefln("  PROHELP_AS_HELP (this process): %s", s.asHelpWrapper ? "yes" : "no");
     writefln("  install marker:                 %s", s.installMarker ? "yes" : "no");
     writefln("  prohelp on PATH:                %s", s.onPath ? "yes" : "no");

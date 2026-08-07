@@ -8,6 +8,7 @@ import std.algorithm;
 import prohelp.parser;
 import prohelp.renderer;
 import prohelp.clipboard;
+import prohelp.console;
 
 version(Windows) {
     import core.sys.windows.windows;
@@ -94,6 +95,7 @@ version(Posix) {
 
 // Starts the full-screen human TUI browser
 public void launchInteractiveTUI(Command cmd, string[] initialPath, string localeCode) {
+    prepareConsoleOutput();
     TUIState state = new TUIState(cmd, localeCode);
     
     // Drill down to initial path if provided
@@ -164,6 +166,7 @@ public void launchInteractiveTUI(Command cmd, string[] initialPath, string local
 private void renderTUIFrame(TUIState state) {
     state.updateTerminalSize();
     state.clearScreenBuffer();
+    auto bx = boxChars();
 
     auto sb = appender!string();
     // Clear viewport using terminal sequences
@@ -176,7 +179,7 @@ private void renderTUIFrame(TUIState state) {
     string header = " " ~ hierarchy ~ " ";
     int headPad = state.width - 2 - cast(int)header.length;
     if (headPad < 0) headPad = 0;
-    string headerLine = "┌" ~ header ~ replicate("─", headPad) ~ "┐";
+    string headerLine = bx.tl ~ header ~ replicate(bx.h, headPad) ~ bx.tr;
     sb.put("\033[2m" ~ headerLine ~ "\033[0m\n");
     
     // Copy header text into screen buffer
@@ -195,7 +198,7 @@ private void renderTUIFrame(TUIState state) {
     }
 
     // Divider
-    string div = "├" ~ replicate("─", state.width - 2) ~ "┤";
+    string div = bx.lj ~ replicate(bx.h, state.width - 2) ~ bx.rj;
     sb.put("\033[2m" ~ div ~ "\033[0m\n");
     foreach (col; 0 .. min(state.width, div.length)) {
         state.screenBuffer[2][col] = div[col];
@@ -247,7 +250,7 @@ private void renderTUIFrame(TUIState state) {
         int pad = state.width - 1 - cast(int)rawLine.length;
         if (pad < 0) pad = 0;
         
-        string fullLine = line ~ replicate(" ", pad) ~ "\033[2m│\033[0m";
+        string fullLine = line ~ replicate(" ", pad) ~ "\033[2m" ~ bx.v ~ "\033[0m";
         sb.put(parseColors(fullLine ~ "\n", true));
 
         // Copy raw characters to virtual screen buffer
@@ -258,7 +261,7 @@ private void renderTUIFrame(TUIState state) {
     }
 
     // 4. Divider and Footer
-    string bottomDiv = "├" ~ replicate("─", state.width - 2) ~ "┤";
+    string bottomDiv = bx.lj ~ replicate(bx.h, state.width - 2) ~ bx.rj;
     sb.put("\033[2m" ~ bottomDiv ~ "\033[0m\n");
     foreach (col; 0 .. min(state.width, bottomDiv.length)) {
         state.screenBuffer[state.height - 2][col] = bottomDiv[col];
@@ -269,7 +272,7 @@ private void renderTUIFrame(TUIState state) {
     string footer = " [Arrows] Move  [Shift/v] Highlight  " ~ hToggle ~ "  [Ctrl+F] Find  [Ctrl+Esc] Exit";
     int footPad = state.width - 2 - cast(int)stripStyles(footer).length;
     if (footPad < 0) footPad = 0;
-    string footerLine = "└" ~ footer ~ replicate("─", footPad) ~ "┘";
+    string footerLine = bx.bl ~ footer ~ replicate(bx.h, footPad) ~ bx.br;
     sb.put(parseColors(footerLine, true));
     
     string rawFooter = stripStyles(footerLine);
@@ -281,7 +284,7 @@ private void renderTUIFrame(TUIState state) {
     if (state.highlightMode && state.selectStartRow != -1) {
         // Draw frame with color replacements manually (we print the output, but in this case, 
         // we can redraw highlighted selection lines using standard terminal VT cursor sequences).
-        write(sb.data);
+        write(maybeAsciiBoxes(sb.data));
         stdout.flush();
 
         // Overlay the inverted rectangle
@@ -305,7 +308,7 @@ private void renderTUIFrame(TUIState state) {
         stdout.flush();
     } else {
         // Flat output
-        write(sb.data);
+        write(maybeAsciiBoxes(sb.data));
         stdout.flush();
     }
 }
@@ -326,8 +329,13 @@ private string extractMarkdownFromBuffer(TUIState state) {
         line = line.stripRight();
         
         // Clean up UI borders
+        auto bx = boxChars();
         line = line.replace("┌", "").replace("┐", "").replace("└", "").replace("┘", "")
-                   .replace("├", "").replace("┤", "").replace("│", "").replace("─", "");
+                   .replace("├", "").replace("┤", "").replace("│", "").replace("─", "")
+                   .replace(bx.tl, "").replace(bx.tr, "").replace(bx.bl, "").replace(bx.br, "")
+                   .replace(bx.lj, "").replace(bx.rj, "").replace(bx.v, "");
+        // Horizontal ASCII "-" is also prose; leave content hyphens intact.
+        // Unicode box horizontals are stripped above.
         
         if (line.strip().length > 0) {
             md.put(line ~ "\n");

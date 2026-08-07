@@ -8,6 +8,9 @@ This project maintains a structured release history with links to detailed relea
 
 ## Release History
 
+* **2026-08-07** — Static box: frame glyphs always dim; section dividers share one width formula with content rows (display-column math, not UTF-8 byte length).
+* **2026-08-06** — Build: avoid dub stringImportPaths: ["."] (dub 1.41 expands . as Invalid variable: null); embed help.sdl via embed/ + docs/.
+* **2026-08-06** — Windows: set console UTF-8 + VT before printing; ASCII box/punctuation fallback when OutputCP is not UTF-8 (`PROHELP_ASCII` / `PROHELP_UNICODE`). Fixes CP437 mojibake (`Γöî` / `ΓÇö`) in PowerShell/conhost.
 * **2026-08-06** — Nushell: use `%APPDATA%\nushell` (Windows) / `XDG_CONFIG_HOME` when set; detect via `NU_VERSION` / `NU_LIB_DIRS` even when `$SHELL` is still bash/zsh. Safer `source` guard in `config.nu`. PowerShell profile prefers Windows Documents paths.
 * **2026-08-06** — Windows: link `user32` for clipboard APIs (`OpenClipboard` et al.) so consumer apps link cleanly under DMD/LLD.
 * **2026-08-01** — Whole-document schemas: author prohelp as `help.md` / `help.adoc` / `help.cmk` with frontmatter; headings → sections. Warn on missing metadata and nudge feature requests (search links) when a command has no prohelp docs.

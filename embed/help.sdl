@@ -1,0 +1,85 @@
+command "prohelp" {
+    title "Prohelp Progressive CLI Help"
+    summary "Progressive CLI help specification, library, and dispatcher"
+    description "Schema-driven progressive help for CLI apps, plus a shell `help` wrapper that extends builtins to PATH commands (man/info/help.sdl)."
+    homepage "https://github.com/openshellorg/prohelp"
+    docs "https://openshellorg.github.io/prohelp/shell-help.html"
+    issues "https://github.com/openshellorg/prohelp/issues"
+
+    locale "de" {
+        summary "Progressives CLI-Hilfesystem"
+        description "Ein Entwicklerwerkzeug und eine Dlang-Bibliothek, die Hilfe-Argumente abfängt und bildschirmgerechte, progressive Dokumentation ausgibt."
+    }
+
+    locale "es" {
+        summary "Sistema de ayuda CLI progresivo y profesional"
+        description "Una utilidad de desarrollo y biblioteca Dlang que intercepta argumentos de ayuda y genera documentación progresiva y estructurada."
+    }
+
+    section "shell-help" {
+        summary "Extend shell `help` to PATH binaries (required post-install)"
+        content-ref "docs/shell-help.adoc" {
+            format "asciidoc"
+        }
+    }
+
+    section "usage" {
+        summary "Integration syntax and execution patterns"
+        content "prohelp [schema.sdl] [help|?][:[locale][,mode]] [path...] [*]\nprohelp wrapper status|install|uninstall [--shell=...]\nprohelp --as-help [command]"
+
+        example "Built-in progressive help" "prohelp ?"
+        example "Shell-help setup section" "prohelp ? shell-help"
+        example "Install help() wrapper" "prohelp wrapper install"
+        example "Preview another command's help schema" "prohelp examples/tar.sdl ?"
+        example "German Interactive TUI Viewport" "prohelp ?:de,i"
+    }
+
+    section "wrapper" {
+        summary "Shell function install for bash/zsh/fish/nu/pwsh (not cmd)"
+        content "Registers a `help` function that keeps builtin help for builtins and routes PATH topics through prohelp. See: prohelp ? shell-help\nWeb: https://openshellorg.github.io/prohelp/shell-help.html"
+    }
+
+    section "preview" {
+        summary "Help schema interpreter mode"
+        content "Pass a help.sdl file to virtualize that command's context. Rendering, navigation, and examples use the schema's command name (for example tar) instead of prohelp."
+
+        example "Preview tar help from a schema file" "prohelp examples/tar.sdl ?"
+        example "Drill into a previewed schema section" "prohelp -f myapp/help.sdl ? operations"
+    }
+
+    section "meta" {
+        summary "Standard metadata fields for every prohelp command schema"
+        content "Required/recommended command fields:\n  name (binary), title (full app name), summary, description (content),\n  homepage, docs, issues, issues-ai (optional AI report UI).\nAuthor as help.sdl, or as help.md / help.adoc / help.cmk with frontmatter (YAML, AsciiDoc attributes, or CentrMark SDL fence).\nHeadings become sections.\nEssential discovery fields (homepage, docs, issues): warn only when empty — if set in the definition or frontmatter, no notice.\nWhen a PATH command has no prohelp schema, prohelp nudges a feature request (search link included)."
+    }
+
+    section "navigation" {
+        summary "Subcommand and Section traversal"
+        inline true
+
+        section "hierarchy" {
+            summary "Drill down into categories"
+            option "path" "A sequential list of subsection names as defined in help.sdl"
+        }
+
+        section "globbing" {
+            summary "Wildcards for subtree extraction"
+            option "*" "all" "Dumps the current section and all child pages recursively (Text Mode only)"
+        }
+    }
+
+    section "directives" {
+        summary "Help system parameters (suffixed after colon)"
+        inline true
+
+        section "modes" {
+            summary "Output styles and viewport modes"
+            option "i" "interactive" "Launches full-screen TUI with alphanumeric filter and Ctrl+C copy"
+            option "text" "txt" "Launches static, Unicode-boxed Progressive Text Mode (default)"
+        }
+
+        section "locales" {
+            summary "Language settings"
+            option "locale-code" "A 2-letter language code (e.g. de, es, en) to view translations"
+        }
+    }
+}

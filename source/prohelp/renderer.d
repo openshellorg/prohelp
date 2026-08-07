@@ -7,6 +7,7 @@ import std.array;
 import std.algorithm;
 import std.regex;
 import prohelp.parser;
+import prohelp.console;
 
 version(Windows) {
     import core.sys.windows.windows;
@@ -171,17 +172,70 @@ public string[] wrapText(string text, size_t maxWidth) {
     return lines;
 }
 
-// Render a Section as a beautifully zoned Unicode box
+/// Terminal columns for styled text (style tags ignored; each code point = 1 col).
+/// Box-drawing is one column; do not use `.length` (UTF-8 byte length) for layout.
+public int displayWidth(string styled) {
+    int n = 0;
+    foreach (dchar c; stripStyles(styled))
+        n++;
+    return n;
+}
+
+/// Full-width top/bottom edge: `┌──── title ────┐` totaling `boxWidth` columns.
+private string framedEdge(string leftCorner, string rightCorner, string title, int boxWidth,
+    BoxChars bx, bool enableColor)
+{
+    int inner = boxWidth - 2; // between corners
+    int titleW = displayWidth(title);
+    if (titleW > inner - 2)
+        titleW = inner - 2;
+    int left = (inner - titleW) / 2;
+    if (left < 1) left = 1;
+    int right = inner - titleW - left;
+    if (right < 1) {
+        right = 1;
+        left = inner - titleW - right;
+        if (left < 1) left = 1;
+    }
+    string line = leftCorner ~ replicate(bx.h, left) ~ title ~ replicate(bx.h, right) ~ rightCorner;
+    return parseColors("<color=dim>" ~ line ~ "</>\n", enableColor);
+}
+
+/// Section divider: `├─ Label ────┤` totaling `contentWidth + 4` (= boxWidth) columns.
+/// `label` should include surrounding spaces, e.g. `" Content "`.
+private string framedDivider(string label, int contentWidth, BoxChars bx, bool enableColor) {
+    // lj(1) + h(1) + label + dashes + rj(1) == contentWidth + 4
+    int labelW = displayWidth(label);
+    int dashes = contentWidth + 1 - labelW;
+    if (dashes < 2) dashes = 2;
+    string line = bx.lj ~ bx.h ~ label ~ replicate(bx.h, dashes) ~ bx.rj;
+    return parseColors("<color=dim>" ~ line ~ "</>\n", enableColor);
+}
+
+/// Content row: dim pipes, undimmed body. Total width `contentWidth + 4`.
+private string framedRow(string inner, int contentWidth, BoxChars bx, bool enableColor) {
+    int pad = contentWidth - displayWidth(inner);
+    if (pad < 0) pad = 0;
+    return parseColors(
+        "<color=dim>" ~ bx.v ~ "</> " ~ inner ~ replicate(" ", pad)
+            ~ " <color=dim>" ~ bx.v ~ "</>\n",
+        enableColor);
+}
+
+// Render a Section as a zoned box (Unicode when console is UTF-8; ASCII otherwise)
 public string renderSectionBox(Command cmd, Section sec, string[] path, string localeCode, bool enableColor = true) {
+    prepareConsoleOutput();
+    auto bx = boxChars();
+
     int termWidth, termHeight;
     getTerminalSize(termWidth, termHeight);
-    
+
     // Clamp visual box width for premium layout
     int boxWidth = termWidth - 4;
     if (boxWidth < 50) boxWidth = 50;
     if (boxWidth > 80) boxWidth = 80;
 
-    int contentWidth = boxWidth - 4; // padding left & right
+    int contentWidth = boxWidth - 4; // between "│ " and " │"
 
     string title = cmd.name;
     if (path.length > 0) {
@@ -190,7 +244,6 @@ public string renderSectionBox(Command cmd, Section sec, string[] path, string l
     title = " " ~ title ~ " ";
 
     string summary = sec.summary;
-    // Check translation
     string lowerLoc = localeCode.toLower();
     if (path.length == 0) {
         if (auto pLoc = lowerLoc in cmd.locales) {
@@ -199,15 +252,7 @@ public string renderSectionBox(Command cmd, Section sec, string[] path, string l
     }
 
     auto sb = appender!string();
-
-    int topDashLen = (contentWidth - cast(int)stripStyles(title).length) / 2;
-    if (topDashLen < 2) topDashLen = 2;
-    string topDashes = replicate("─", topDashLen);
-    string topBorder = "┌─" ~ topDashes ~ title ~ topDashes;
-    int topRemaining = boxWidth - 1 - cast(int)stripStyles(topBorder).length;
-    if (topRemaining > 0) topBorder ~= replicate("─", topRemaining);
-    topBorder ~= "┐";
-    sb.put(parseColors("<color=dim>" ~ topBorder ~ "</>\n", enableColor));
+    sb.put(framedEdge(bx.tl, bx.tr, title, boxWidth, bx, enableColor));
 
     // Project metadata near the top (docs / repo / issues)
     if (path.length == 0) {
@@ -220,27 +265,17 @@ public string renderSectionBox(Command cmd, Section sec, string[] path, string l
         if (cmd.issuesAiUrl.length) metaLines ~= "Report UI: " ~ cmd.issuesAiUrl;
         if (metaLines.length) {
             foreach (ml; metaLines) {
-                string[] wrapped = wrapText("<color=cyan>" ~ ml ~ "</>", contentWidth);
-                foreach (line; wrapped) {
-                    int pad = contentWidth - cast(int)stripStyles(line).length;
-                    string formatted = "│ " ~ line ~ replicate(" ", pad) ~ " │\n";
-                    sb.put(parseColors(formatted, enableColor));
-                }
+                foreach (line; wrapText("<color=cyan>" ~ ml ~ "</>", contentWidth))
+                    sb.put(framedRow(line, contentWidth, bx, enableColor));
             }
-            sb.put(parseColors("<color=dim>│ " ~ replicate(" ", contentWidth) ~ " │</>\n", enableColor));
+            sb.put(framedRow("", contentWidth, bx, enableColor));
         }
     }
 
-    // Summary Section
     if (summary.length > 0) {
-        string[] wrappedSummary = wrapText(summary, contentWidth);
-        foreach (line; wrappedSummary) {
-            int pad = contentWidth - cast(int)stripStyles(line).length;
-            string formatted = "│ " ~ line ~ replicate(" ", pad) ~ " │\n";
-            sb.put(parseColors(formatted, enableColor));
-        }
-        
-        // Detailed description (Level 0 only)
+        foreach (line; wrapText(summary, contentWidth))
+            sb.put(framedRow(line, contentWidth, bx, enableColor));
+
         string desc = cmd.description;
         if (path.length == 0) {
             if (auto pLoc = lowerLoc in cmd.locales) {
@@ -248,60 +283,43 @@ public string renderSectionBox(Command cmd, Section sec, string[] path, string l
             }
         }
         if (path.length == 0 && desc.length > 0) {
-            sb.put(parseColors("<color=dim>│ " ~ replicate(" ", contentWidth) ~ " │</>\n", enableColor));
-            string[] wrappedDesc = wrapText(desc, contentWidth);
-            foreach (line; wrappedDesc) {
-                int pad = contentWidth - cast(int)stripStyles(line).length;
-                string formatted = "│ " ~ line ~ replicate(" ", pad) ~ " │\n";
-                sb.put(parseColors(formatted, enableColor));
-            }
+            sb.put(framedRow("", contentWidth, bx, enableColor));
+            foreach (line; wrapText(desc, contentWidth))
+                sb.put(framedRow(line, contentWidth, bx, enableColor));
         }
     }
 
-    // Content Section
     if (sec.content.length > 0) {
-        sb.put(parseColors("<color=dim>├─ Content " ~ replicate("─", contentWidth - 10) ~ "┤</>\n", enableColor));
-        string[] wrappedContent = wrapText(sec.content, contentWidth);
-        foreach (line; wrappedContent) {
-            int pad = contentWidth - cast(int)stripStyles(line).length;
-            string formatted = "│ " ~ line ~ replicate(" ", pad) ~ " │\n";
-            sb.put(parseColors(formatted, enableColor));
-        }
+        sb.put(framedDivider(" Content ", contentWidth, bx, enableColor));
+        foreach (line; wrapText(sec.content, contentWidth))
+            sb.put(framedRow(line, contentWidth, bx, enableColor));
     }
 
-    // Subsections Section
     if (sec.subsections.length > 0) {
-        string header = "─ Sections (Run: '" ~ cmd.name ~ " ?:<section>' to view) ";
-        int headDashes = contentWidth - cast(int)stripStyles(header).length;
-        if (headDashes < 2) headDashes = 2;
-        string divider = "├" ~ header ~ replicate("─", headDashes) ~ "┤\n";
-        sb.put(parseColors("<color=dim>" ~ divider ~ "</>", enableColor));
+        sb.put(framedDivider(
+            " Sections (Run: '" ~ cmd.name ~ " ?:<section>' to view) ",
+            contentWidth, bx, enableColor));
 
         foreach (sub; sec.subsections) {
             string line = "  <color=green>" ~ sub.name ~ "</>";
-            
-            // Inline listing of children if specified
+
             if (sub.inlineExpand && sub.subsections.length > 0) {
                 string[] kids;
                 foreach (k; sub.subsections) kids ~= k.name;
                 line ~= " <color=dim>[" ~ kids.join("|") ~ "]</>";
             }
 
-            int lineLen = cast(int)stripStyles(line).length;
-            int pad = contentWidth - lineLen;
+            int pad = contentWidth - displayWidth(line);
             if (pad > 32) {
                 string sum = sub.summary;
-                if (sum.length > 28) sum = sum[0..25] ~ "...";
-                line ~= replicate(" ", pad - cast(int)sum.length - 2) ~ "<color=dim>" ~ sum ~ "</>";
-                pad = contentWidth - cast(int)stripStyles(line).length;
+                if (displayWidth(sum) > 28) sum = sum[0 .. 25] ~ "...";
+                line ~= replicate(" ", pad - displayWidth(sum) - 2) ~ "<color=dim>" ~ sum ~ "</>";
             }
-            
-            string formatted = "│ " ~ line ~ replicate(" ", pad) ~ " │\n";
-            sb.put(parseColors(formatted, enableColor));
+
+            sb.put(framedRow(line, contentWidth, bx, enableColor));
         }
     }
 
-    // Options Section
     if (sec.options.length > 0) {
         string[] dominanceTiers = ["high", "medium", "low"];
         string[] tierHeaders = ["HIGH PRIORITY", "MEDIUM PRIORITY", "LOW PRIORITY/ADVANCED"];
@@ -311,47 +329,33 @@ public string renderSectionBox(Command cmd, Section sec, string[] path, string l
             auto tierOpts = sec.options.filter!(o => o.dominance == tier).array;
             if (tierOpts.length == 0) continue;
 
-            string header = "─ Option Group: " ~ tierHeaders[tIdx] ~ " ";
-            int headDashes = contentWidth - cast(int)stripStyles(header).length;
-            if (headDashes < 2) headDashes = 2;
-            string divider = "├" ~ header ~ replicate("─", headDashes) ~ "┤\n";
-            sb.put(parseColors("<color=dim>" ~ divider ~ "</>", enableColor));
+            sb.put(framedDivider(
+                " Option Group: " ~ tierHeaders[tIdx] ~ " ",
+                contentWidth, bx, enableColor));
 
             foreach (opt; tierOpts) {
                 string flagCol = tierColors[tIdx];
                 string flagsStr = opt.flags.join(", ");
                 string line = "  <color=" ~ flagCol ~ ">" ~ flagsStr ~ "</>";
-                int lineLen = cast(int)stripStyles(line).length;
-
-                int pad = contentWidth - lineLen;
+                int pad = contentWidth - displayWidth(line);
                 if (pad > 25) {
                     string desc = opt.description;
-                    if (desc.length > 30) desc = desc[0..27] ~ "...";
-                    line ~= replicate(" ", pad - cast(int)desc.length - 2) ~ "<color=dim>" ~ desc ~ "</>";
-                    pad = contentWidth - cast(int)stripStyles(line).length;
+                    if (displayWidth(desc) > 30) desc = desc[0 .. 27] ~ "...";
+                    line ~= replicate(" ", pad - displayWidth(desc) - 2) ~ "<color=dim>" ~ desc ~ "</>";
                 }
-
-                string formatted = "│ " ~ line ~ replicate(" ", pad) ~ " │\n";
-                sb.put(parseColors(formatted, enableColor));
+                sb.put(framedRow(line, contentWidth, bx, enableColor));
             }
         }
     }
 
-    // Bottom info block (Metadata, Escape, Locales)
-    string infoDiv = "├─ Info " ~ replicate("─", contentWidth - 7) ~ "┤\n";
-    sb.put(parseColors("<color=dim>" ~ infoDiv ~ "</>", enableColor));
-
-    string locLine = "  Locale: " ~ localeCode ~ "   |   (?:i for interactive)";
-    int locPad = contentWidth - cast(int)stripStyles(locLine).length;
-    sb.put(parseColors("│ " ~ locLine ~ replicate(" ", locPad) ~ " │\n", enableColor));
-
-    string escLine = "  Escape: Filename 'help' or '?' can be passed as './help' or './?'";
-    int escPad = contentWidth - cast(int)stripStyles(escLine).length;
-    sb.put(parseColors("│ " ~ escLine ~ replicate(" ", escPad) ~ " │\n", enableColor));
-
-    // Bottom border
-    string bottomBorder = "└─" ~ replicate("─", contentWidth) ~ "─┘\n";
-    sb.put(parseColors("<color=dim>" ~ bottomBorder ~ "</>", enableColor));
+    sb.put(framedDivider(" Info ", contentWidth, bx, enableColor));
+    sb.put(framedRow(
+        "  Locale: " ~ localeCode ~ "   |   (?:i for interactive)",
+        contentWidth, bx, enableColor));
+    sb.put(framedRow(
+        "  Escape: Filename 'help' or '?' can be passed as './help' or './?'",
+        contentWidth, bx, enableColor));
+    sb.put(framedEdge(bx.bl, bx.br, "", boxWidth, bx, enableColor));
 
     return sb.data;
 }

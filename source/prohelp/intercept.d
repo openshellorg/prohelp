@@ -14,10 +14,13 @@ import prohelp.pager;
 import prohelp.embedded;
 import prohelp.registration;
 import prohelp.nudge;
+import prohelp.console;
 
 // First-pass CLI Argument Interceptor
 public bool intercept(string[] args, InterceptConfig config = InterceptConfig.init) {
     if (args.length < 2) return false;
+
+    prepareConsoleOutput();
 
     string trigger = args[1].toLower();
 
@@ -139,7 +142,7 @@ public bool intercept(string[] args, InterceptConfig config = InterceptConfig.in
             printSubtreeRecursive(cmd, targetSection, path, localeCode, color);
         } else {
             string box = renderSectionBox(cmd, targetSection, path, localeCode, color);
-            write(box);
+            write(maybeAsciiBoxes(box));
             stdout.flush();
         }
     }
@@ -149,7 +152,7 @@ public bool intercept(string[] args, InterceptConfig config = InterceptConfig.in
 
 private void printSubtreeRecursive(Command cmd, Section sec, string[] path, string localeCode, bool enableColor) {
     string box = renderSectionBox(cmd, sec, path, localeCode, enableColor);
-    write(box);
+    write(maybeAsciiBoxes(box));
     stdout.flush();
 
     foreach (sub; sec.subsections) {

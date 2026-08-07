@@ -1,17 +1,25 @@
 {
     "name": "prohelp",
     "description": "Progressive CLI help specification and reference library (OpenShellOrg)",
-    "authors": ["OpenShellOrg", "dev-centr"],
+    "authors": [
+        "OpenShellOrg",
+        "dev-centr"
+    ],
     "license": "Proprietary",
     "homepage": "https://github.com/openshellorg/prohelp",
     "targetType": "library",
     "dependencies": {
         "sdlang-d": "~>0.10.6"
     },
-    "libs-windows": ["user32"],
-    "libs-windows-x86_64": ["user32"],
-    "libs-windows-x86": ["user32"],
-
+    "libs-windows": [
+        "user32"
+    ],
+    "libs-windows-x86_64": [
+        "user32"
+    ],
+    "libs-windows-x86": [
+        "user32"
+    ],
     "configurations": [
         {
             "name": "library",
@@ -22,18 +30,33 @@
             "targetType": "executable",
             "targetName": "prohelp",
             "mainSourceFile": "source/app.d",
-            "excludedSourceFiles": ["source/help_main.d"],
-            "stringImportPaths": [".", "docs"],
-            "versions": ["ProhelpExecutable"]
+            "excludedSourceFiles": [
+                "source/help_main.d"
+            ],
+            "stringImportPaths": [
+                "embed",
+                "docs"
+            ],
+            "versions": [
+                "ProhelpExecutable"
+            ]
         },
         {
             "name": "help",
             "targetType": "executable",
             "targetName": "help",
             "mainSourceFile": "source/help_main.d",
-            "excludedSourceFiles": ["source/app.d"],
-            "stringImportPaths": [".", "docs"],
-            "versions": ["ProhelpHelpBinary", "ProhelpExecutable"]
+            "excludedSourceFiles": [
+                "source/app.d"
+            ],
+            "stringImportPaths": [
+                "embed",
+                "docs"
+            ],
+            "versions": [
+                "ProhelpHelpBinary",
+                "ProhelpExecutable"
+            ]
         }
     ]
 }

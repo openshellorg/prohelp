@@ -1,7 +1,7 @@
 = Features
 :description: Progressive disclosure, TUI, locales, and line budgets.
 
-* *Default Static Box Zoning* — Unicode-boxed panels compatible with pipes, redirects, and log files.
+* *Default Static Box Zoning* — Unicode-boxed panels when the console is UTF-8 (or when output is piped); ASCII `+|-` fallback on legacy Windows OEM code pages. Opt out/in with `PROHELP_ASCII=1` / `PROHELP_UNICODE=1`.
 * *Opt-in TUI Viewport* — full-screen browser (`?:i` or `?:interactive`) with filter search and clipboard copy.
 * *1-Line Integration API* — first-pass argument filtering into standard `main` entries.
 * *Hierarchical Globbing (`*`)* — subtree extraction for scripts and agents (e.g. `tar ?:text operations *`).

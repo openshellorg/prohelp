@@ -6,6 +6,7 @@ import std.path;
 import std.process;
 import std.stdio;
 import std.string;
+import prohelp.console;
 
 /// Canonical docs URL for shell `help` wrapper setup.
 enum shellHelpDocsUrl = "https://openshellorg.github.io/prohelp/shell-help.html";
@@ -79,6 +80,8 @@ void warnIfHelpWrapperMissing(bool enableColor = true) {
     if (s.looksConfigured) return;
     if (environment.get("PROHELP_QUIET", "") == "1") return;
 
+    prepareConsoleOutput();
+
     auto dim = enableColor ? "\033[2m" : "";
     auto bold = enableColor ? "\033[1m" : "";
     auto reset = enableColor ? "\033[0m" : "";
@@ -91,14 +94,16 @@ void warnIfHelpWrapperMissing(bool enableColor = true) {
     stderr.writeln(dim, "          prohelp wrapper status", reset);
     stderr.writeln(dim, "          prohelp wrapper install", reset);
     stderr.writeln(dim, "  If a package installed prohelp without the wrapper, that is an installer/", reset);
-    stderr.writeln(dim, "  maintainer bug — report it (include distro/package name) at:", reset);
+    stderr.writeln(dim, "  maintainer bug ", dashEm(), " report it (include distro/package name) at:", reset);
     stderr.writeln(dim, "  ", prohelpIssuesUrl, reset);
     stderr.writeln();
 }
 
 string registrationBannerLine() {
     if (invokedAsHelpWrapper()) {
-        return "prohelp: extending shell `help` (builtins → shell; PATH → prohelp/man/info)";
+        prepareConsoleOutput();
+        return "prohelp: extending shell `help` (builtins " ~ arrowRight() ~ " shell; PATH "
+            ~ arrowRight() ~ " prohelp/man/info)";
     }
     return "";
 }

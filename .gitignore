@@ -18,6 +18,7 @@ build/
 !source/prohelp/
 !site/
 !examples/
+!embed/
 !changelog-details/
 !docs/
 !docs/**
@@ -35,6 +36,7 @@ build/
 !COPYING
 !dub.json
 !help.sdl
+!embed/help.sdl
 
 # Allow source files
 !source/app.d
