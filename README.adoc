@@ -3,7 +3,30 @@ ifndef::env-github[:icons: font]
 :toclevels: 2
 :sectanchors:
 
-[[readme-top]]
+ifdef::env-github[]
+++++
+<a id="readme-top"></a>
+<div align="center">
+<a href="https://github.com/openshellorg/prohelp/graphs/contributors"><img src="https://img.shields.io/github/contributors/openshellorg/prohelp.svg?style=for-the-badge" alt="Contributors"></a>
+<a href="https://github.com/openshellorg/prohelp/network/members"><img src="https://img.shields.io/github/forks/openshellorg/prohelp.svg?style=for-the-badge" alt="Forks"></a>
+<a href="https://github.com/openshellorg/prohelp/stargazers"><img src="https://img.shields.io/github/stars/openshellorg/prohelp.svg?style=for-the-badge" alt="Stars"></a>
+<a href="https://github.com/openshellorg/prohelp/issues"><img src="https://img.shields.io/github/issues/openshellorg/prohelp.svg?style=for-the-badge" alt="Issues"></a>
+<a href="https://github.com/openshellorg/prohelp/blob/main/LICENSE"><img src="https://img.shields.io/github/license/openshellorg/prohelp.svg?style=for-the-badge" alt="License"></a>
+<br />
+<h3 align="center">Prohelp: Progressive CLI Help</h3>
+<p align="center">
+Progressive & Professional Help CLI Interceptor and Library.<br />
+<a href="https://openshellorg.github.io/prohelp/">Explore the docs</a><br />
+<br />
+<a href="https://github.com/openshellorg/prohelp/issues">Report Bug</a>
+&middot;
+<a href="https://github.com/openshellorg/prohelp/issues">Request Feature</a>
+</p>
+</div>
+++++
+endif::[]
+
+ifndef::env-github[]
 image:https://img.shields.io/github/contributors/openshellorg/prohelp.svg?style=for-the-badge[Contributors,link=https://github.com/openshellorg/prohelp/graphs/contributors]
 image:https://img.shields.io/github/forks/openshellorg/prohelp.svg?style=for-the-badge[Forks,link=https://github.com/openshellorg/prohelp/network/members]
 image:https://img.shields.io/github/stars/openshellorg/prohelp.svg?style=for-the-badge[Stars,link=https://github.com/openshellorg/prohelp/stargazers]
@@ -17,6 +40,7 @@ Progressive & Professional Help CLI Interceptor and Library.
 link:https://openshellorg.github.io/prohelp/[Explore the docs] ·
 link:https://github.com/openshellorg/prohelp/issues[Report Bug] ·
 link:https://github.com/openshellorg/prohelp/issues[Request Feature]
+endif::[]
 
 == About The Project
 
@@ -28,8 +52,9 @@ Docs for the wrapper: https://openshellorg.github.io/prohelp/shell-help.html
 
 Prohelp is **not** a full command-line application framework. It solves progressive *help* only. For building CLI tools, use a framework and wire Prohelp in.
 
-link:#readme-top[back to top]
-
+++++
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+++++
 == Installation
 
 === Prerequisites
@@ -44,8 +69,9 @@ link:#readme-top[back to top]
 dub build -c executable
 ----
 
-link:#readme-top[back to top]
-
+++++
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+++++
 == Usage
 
 === CLI usage
@@ -88,8 +114,9 @@ void main(string[] args) {
 }
 ----
 
-link:#readme-top[back to top]
-
+++++
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+++++
 == Key Features
 
 * **Default Static Box Zoning**: Generates gorgeous, Unicode-boxed information panels compatible with pipes, redirects, and log files.
@@ -105,8 +132,9 @@ See link:CHANGELOG.md[Changelog].
 
 Prohelp is licensed under the link:LICENSE[Prohelp Copyleft and Disclosure License (PCDL) Version 1.0].
 
-link:#readme-top[back to top]
-
+++++
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+++++
 == Contact
 
 Open Shell Org — openshell@devcentr.org
@@ -114,4 +142,6 @@ Open Shell Org — openshell@devcentr.org
 * Project: https://github.com/openshellorg/prohelp
 * Site: https://openshellorg.github.io
 
-link:#readme-top[back to top]
+++++
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+++++
