@@ -1,0 +1,96 @@
+# Reusable ship gate: fail PRs when a help schema is empty or weak.
+#
+# Callers opt in. This does not run automatically in other repositories.
+#
+#   jobs:
+#     prohelp:
+#       uses: dev-centr/prohelp/.github/workflows/check-schema.yml@main
+#       with:
+#         schema-path: help.sdl
+#         strict: true
+#
+name: Check help schema
+
+on:
+  workflow_call:
+    inputs:
+      schema-path:
+        description: Schema file relative to the caller repository root
+        type: string
+        default: help.sdl
+      extra-paths:
+        description: Optional extra schema paths, one per line
+        type: string
+        default: ''
+      strict:
+        description: Treat completeness warnings as failures
+        type: boolean
+        default: true
+      prohelp-repository:
+        description: GitHub repo that provides the prohelp checker
+        type: string
+        default: dev-centr/prohelp
+      prohelp-ref:
+        description: Git ref of prohelp to build (tag or branch)
+        type: string
+        default: main
+  workflow_dispatch:
+    inputs:
+      schema-path:
+        description: Schema file relative to this repository
+        type: string
+        default: help.sdl
+      extra-paths:
+        description: Optional extra schema paths, one per line
+        type: string
+        default: ''
+      strict:
+        description: Treat completeness warnings as failures
+        type: boolean
+        default: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout caller
+        uses: actions/checkout@v4
+
+      - name: Checkout prohelp
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.prohelp-repository || 'dev-centr/prohelp' }}
+          ref: ${{ inputs.prohelp-ref || 'main' }}
+          path: .prohelp-tool
+
+      - name: Setup D compiler
+        uses: dlang-community/setup-dlang@v1
+        with:
+          compiler: ldc-latest
+
+      - name: Build prohelp CLI
+        run: dub build -c executable --build=release
+        working-directory: .prohelp-tool
+
+      - name: Check schema(s)
+        shell: bash
+        env:
+          SCHEMA_PATH: ${{ inputs.schema-path }}
+          EXTRA_PATHS: ${{ inputs.extra-paths }}
+          STRICT: ${{ inputs.strict }}
+        run: |
+          BIN=.prohelp-tool/prohelp
+          FLAGS=()
+          if [ "$STRICT" = "true" ]; then
+            FLAGS+=(--strict)
+          fi
+          status=0
+          "$BIN" check "$SCHEMA_PATH" "${FLAGS[@]}" || status=$?
+          if [ -n "$EXTRA_PATHS" ]; then
+            while IFS= read -r extra; do
+              extra="${extra//$'\r'/}"
+              [ -z "$extra" ] && continue
+              "$BIN" check "$extra" "${FLAGS[@]}" || status=$?
+            done <<< "$EXTRA_PATHS"
+          fi
+          exit "$status"

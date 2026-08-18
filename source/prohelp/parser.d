@@ -16,6 +16,11 @@ public class Option {
     string dominance = "medium"; // "high", "medium", "low"
 }
 
+public class Example {
+    string title;
+    string command;
+}
+
 public class Section {
     string name;
     string summary;
@@ -25,6 +30,7 @@ public class Section {
     bool inlineExpand = false;
     Section[] subsections;
     Option[] options;
+    Example[] examples;
 
     // Line budget calculation based on simulated Text Mode output format
     int calculateLineCount(int level) {
@@ -36,6 +42,13 @@ public class Section {
 
         if (content.length > 0) {
             count += 2; // Content + spacer
+        }
+
+        if (examples.length > 0) {
+            count += 2; // header + spacer
+            foreach (ex; examples) {
+                count += ex.title.length ? 2 : 1;
+            }
         }
 
         if (subsections.length > 0) {
@@ -104,14 +117,24 @@ public class Command {
     }
 }
 
+/// Level 0 root page: header chrome plus one row per top-level section.
+int commandRootLineCount(const Command cmd) {
+    return 6 + cast(int) cmd.sections.length;
+}
+
+/// Display level 1 ≤ 40 lines; level 2+ ≤ 60.
+int sectionLineBudget(int displayLevel) {
+    return (displayLevel <= 1) ? 40 : 60;
+}
+
 // Main parser function that reads help.sdl from disk.
-public Command parseHelpSDL(string filename) {
+public Command parseHelpSDL(string filename, bool warnBudgets = true) {
     import std.file : readText;
-    return parseHelpSDLContent(readText(filename), filename);
+    return parseHelpSDLContent(readText(filename), filename, warnBudgets);
 }
 
 // Parse help.sdl content from memory (embedded or interpreter preview).
-public Command parseHelpSDLContent(string content, string sourceLabel) {
+public Command parseHelpSDLContent(string content, string sourceLabel, bool warnBudgets = true) {
     Tag root;
     try {
         root = parseSource(content, sourceLabel);
@@ -119,7 +142,7 @@ public Command parseHelpSDLContent(string content, string sourceLabel) {
         throw new Exception("prohelp schema parse error in '" ~ sourceLabel ~ "': " ~ e.msg);
     }
 
-    auto cmd = parseHelpSDLRoot(root, sourceLabel);
+    auto cmd = parseHelpSDLRoot(root, sourceLabel, warnBudgets);
     // Prefer directory of on-disk schemas; embedded labels fall back to cwd.
     if (sourceLabel.length && sourceLabel != "help.sdl" && !sourceLabel.startsWith("embedded")) {
         cmd.schemaDir = dirName(absolutePath(sourceLabel));
@@ -146,7 +169,7 @@ private void resolveContentRefs(Command cmd) {
     foreach (sec; cmd.sections) walk(sec);
 }
 
-private Command parseHelpSDLRoot(Tag root, string sourceLabel) {
+private Command parseHelpSDLRoot(Tag root, string sourceLabel, bool warnBudgets) {
     Tag cmdTag = root.getTag("command");
     if (cmdTag is null) {
         throw new Exception("prohelp schema error: Root 'command' tag is missing in '" ~ sourceLabel ~ "'");
@@ -178,7 +201,7 @@ private Command parseHelpSDLRoot(Tag root, string sourceLabel) {
             parseLocale(child, cmd);
         } else if (child.name == "section") {
             auto sec = new Section();
-            parseSection(child, sec, 0);
+            parseSection(child, sec, 0, warnBudgets);
             cmd.sections ~= sec;
         }
     }
@@ -186,8 +209,8 @@ private Command parseHelpSDLRoot(Tag root, string sourceLabel) {
     if (!cmd.title.length) cmd.title = cmd.name;
 
     // Check sliding-scale line budgets for Level 0
-    int rootLines = 6 + cast(int)cmd.sections.length;
-    if (rootLines > 20) {
+    int rootLines = commandRootLineCount(cmd);
+    if (warnBudgets && rootLines > 20) {
         stderr.writeln("prohelp warning: Level 0 root help page layout exceeds the 20-line single-screen budget (" ~
             rootLines.to!string ~ " lines calculated). Consider merging categories or making sections inline.");
     }
@@ -210,7 +233,7 @@ private void parseLocale(Tag locTag, Command cmd) {
     cmd.locales[lang] = info;
 }
 
-private void parseSection(Tag secTag, Section sec, int level) {
+private void parseSection(Tag secTag, Section sec, int level, bool warnBudgets) {
     if (secTag.values.length == 0 || secTag.values[0].peek!string() is null) {
         throw new Exception("prohelp schema error: 'section' tag must specify a string name.");
     }
@@ -233,8 +256,10 @@ private void parseSection(Tag secTag, Section sec, int level) {
             sec.inlineExpand = child.values[0].get!bool();
         } else if (child.name == "section") {
             auto sub = new Section();
-            parseSection(child, sub, level + 1);
+            parseSection(child, sub, level + 1, warnBudgets);
             sec.subsections ~= sub;
+        } else if (child.name == "example") {
+            sec.examples ~= parseExample(child);
         } else if (child.name == "option") {
             sec.options ~= parseOption(child, "medium");
         } else if (child.name == "dominance") {
@@ -251,12 +276,26 @@ private void parseSection(Tag secTag, Section sec, int level) {
 
     // Validate progressive line budgets for deeper sections
     int calculatedLines = sec.calculateLineCount(level + 1);
-    int budget = (level == 0) ? 40 : 60;
-    if (calculatedLines > budget) {
+    int budget = sectionLineBudget(level + 1);
+    if (warnBudgets && calculatedLines > budget) {
         stderr.writeln("prohelp warning: Section '" ~ sec.name ~ "' (Level " ~ 
             (level + 1).to!string ~ ") exceeds its " ~ budget.to!string ~ 
             "-line budget (" ~ calculatedLines.to!string ~ " lines calculated). Please organize into deeper subsections.");
     }
+}
+
+private Example parseExample(Tag exTag) {
+    auto ex = new Example();
+    if (exTag.values.length >= 2) {
+        if (exTag.values[0].peek!string() !is null)
+            ex.title = exTag.values[0].get!string();
+        if (exTag.values[1].peek!string() !is null)
+            ex.command = exTag.values[1].get!string();
+    } else if (exTag.values.length == 1) {
+        if (exTag.values[0].peek!string() !is null)
+            ex.command = exTag.values[0].get!string();
+    }
+    return ex;
 }
 
 private Option parseOption(Tag optTag, string dominance) {

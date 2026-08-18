@@ -25,9 +25,13 @@ command "prohelp" {
 
     section "usage" {
         summary "Integration syntax and execution patterns"
-        content "prohelp [schema.sdl] [help|?][:[locale][,mode]] [path...] [*]\nprohelp wrapper status|install|uninstall [--shell=...]\nprohelp --as-help [command]"
+        content "prohelp [schema.sdl] [help|?][:[locale][,mode]] [path...] [*]\nprohelp init [path] [--name NAME] [--force] [--fill]\nprohelp fill [path] [--set field=value]\nprohelp check [path] [--strict]\nprohelp wrapper status|install|uninstall [--shell=...]\nprohelp --as-help [command]"
 
         example "Built-in progressive help" "prohelp ?"
+        example "Write a starter schema" "prohelp init --name myapp"
+        example "Fill empty fields" "prohelp fill"
+        example "Report missing fields" "prohelp check"
+        example "Fail CI on weak schemas" "prohelp check --strict"
         example "Shell-help setup section" "prohelp ? shell-help"
         example "Install help() wrapper" "prohelp wrapper install"
         example "Preview another command's help schema" "prohelp examples/tar.sdl ?"
@@ -37,6 +41,15 @@ command "prohelp" {
     section "wrapper" {
         summary "Shell function install for bash/zsh/fish/nu/pwsh (not cmd)"
         content "Registers a `help` function that keeps builtin help for builtins and routes PATH topics through prohelp. See: prohelp ? shell-help\nWeb: https://openshellorg.github.io/prohelp/shell-help.html"
+    }
+
+    section "authoring" {
+        summary "Create, fill, and check a help schema"
+        content "prohelp init writes a blank-but-shaped help.sdl immediately. prohelp fill is the questionnaire (also: init --fill). prohelp check reports empty fields; --strict is the CI ship gate. Other repos can call .github/workflows/check-schema.yml."
+
+        example "Scaffold then fill" "prohelp init --name myapp --fill"
+        example "Non-interactive field set" "prohelp fill --set summary=\"Does a thing\" --set homepage=https://example.com"
+        example "Strict completeness" "prohelp check help.sdl --strict"
     }
 
     section "preview" {

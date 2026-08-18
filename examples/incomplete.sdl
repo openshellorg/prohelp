@@ -1,0 +1,8 @@
+command "incomplete" {
+    title "incomplete"
+    summary ""
+    description ""
+    homepage ""
+    docs ""
+    issues ""
+}
