@@ -34,3 +34,27 @@ prohelp examples/help.adoc ?
 ----
 
 See xref:authoring.adoc[Authoring schemas] for Markdown/AsciiDoc/CentrMark whole-document schemas and `content-ref` formats.
+
+== Create, fill, and check
+
+[source,powershell]
+----
+prohelp init --name myapp
+prohelp fill
+prohelp check
+prohelp check --strict
+----
+
+`init` writes a shaped `help.sdl` before any questions. `fill` is the questionnaire (`init --fill` runs both). `check` reports empty fields; `--strict` fails the process so CI can block a ship.
+
+Other GitHub repos can invoke the reusable workflow (they still have to add the job — Prohelp cannot reach into someone else's pipeline):
+
+[source,yaml]
+----
+jobs:
+  prohelp:
+    uses: openshellorg/prohelp/.github/workflows/check-schema.yml@main
+    with:
+      schema-path: help.sdl
+      strict: true
+----

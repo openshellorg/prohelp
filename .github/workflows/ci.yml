@@ -37,6 +37,34 @@ jobs:
         run: |
           if [ -f prohelp.exe ]; then BIN=./prohelp.exe; else BIN=./prohelp; fi
           "$BIN" --help || "$BIN" ?
+          "$BIN" check --help
+          "$BIN" init --help
+          "$BIN" fill --help
+
+      - name: Check schemas
+        shell: bash
+        run: |
+          if [ -f prohelp.exe ]; then BIN=./prohelp.exe; else BIN=./prohelp; fi
+          "$BIN" check help.sdl --strict
+          "$BIN" check examples/tar.sdl --strict
+          tmp=$(mktemp -d)
+          "$BIN" init "$tmp/help.sdl" --name smoke
+          "$BIN" check "$tmp/help.sdl"
+          if "$BIN" check "$tmp/help.sdl" --strict; then
+            echo "expected init template to fail --strict" >&2
+            exit 1
+          fi
+          if "$BIN" check examples/incomplete.sdl --strict; then
+            echo "expected incomplete.sdl to fail --strict" >&2
+            exit 1
+          fi
+          "$BIN" fill "$tmp/help.sdl" --no-prompt \
+            --set summary="Smoke test" \
+            --set description="Init/fill/check smoke" \
+            --set homepage="https://example.com" \
+            --set docs="https://example.com/docs" \
+            --set issues="https://example.com/issues"
+          "$BIN" check "$tmp/help.sdl" --strict
 
       - name: Smoke help
         shell: bash

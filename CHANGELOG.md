@@ -8,6 +8,8 @@ This project maintains a structured release history with links to detailed relea
 
 ## Release History
 
+* **2026-08-18** — [Init, fill, and check](changelog-details/2026-08-18%20-%20init-fill-check.md): `prohelp init` writes a shaped schema; `prohelp fill` is the questionnaire; `prohelp check [--strict]` reports completeness. Reusable workflow `.github/workflows/check-schema.yml` for downstream CI. Parser now keeps `example` tags and the preview renderer shows them.
+
 * **2026-08-07** — Static box: frame glyphs always dim; section dividers share one width formula with content rows (display-column math, not UTF-8 byte length).
 * **2026-08-06** — Build: avoid dub stringImportPaths: ["."] (dub 1.41 expands . as Invalid variable: null); embed help.sdl via embed/ + docs/.
 * **2026-08-06** — Windows: set console UTF-8 + VT before printing; ASCII box/punctuation fallback when OutputCP is not UTF-8 (`PROHELP_ASCII` / `PROHELP_UNICODE`). Fixes CP437 mojibake (`Γöî` / `ΓÇö`) in PowerShell/conhost.

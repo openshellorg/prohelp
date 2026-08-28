@@ -88,3 +88,40 @@ Each missing essential field gets a DuckDuckGo link seeded with the binary name/
 When **no** prohelp schema is found at all, prohelp prints a separate notice nudging a feature request upstream (also with a filled search link), then falls back to info / man / `--help`.
 
 Suppress notices with `PROHELP_QUIET=1`.
+
+== Init, fill, and check
+
+`prohelp init` writes a shaped `help.sdl` immediately (empty summaries and discovery URLs). It does not wait on a questionnaire.
+
+[source,shell]
+----
+prohelp init --name myapp
+prohelp init path/to/help.sdl --force
+prohelp init --name myapp --fill    # then the questionnaire
+----
+
+`prohelp fill` edits that file. In a TTY it asks for empty fields. In CI or pipes, pass `--set`:
+
+[source,shell]
+----
+prohelp fill help.sdl --set summary="Does a thing" --set homepage=https://example.com
+----
+
+`prohelp check` prints completeness findings (empty summaries, missing `homepage`/`docs`/`issues`, empty sections, line budgets). Exit 0 while findings are warnings.
+
+`--strict` promotes those warnings to failures. That is the ship gate. Prohelp cannot enable it in someone else's pipeline; they add a job that calls the reusable workflow:
+
+[source,yaml]
+----
+name: Prohelp
+on: [push, pull_request]
+jobs:
+  check:
+    uses: openshellorg/prohelp/.github/workflows/check-schema.yml@main
+    with:
+      schema-path: help.sdl
+      strict: true
+----
+
+Pin `@vX.Y.Z` when you depend on a release tag instead of `main`.
+

@@ -16,4 +16,6 @@ For building CLI tools, use a framework and wire Prohelp in:
 
 The `prohelp` preview executable ships with built-in help and can interpret `help.sdl` as well as Markdown/AsciiDoc/CentrMark document schemas for authoring and testing. See xref:authoring.adoc[Authoring schemas].
 
+Create a schema with `prohelp init`, fill fields with `prohelp fill`, and use `prohelp check --strict` (or the reusable GitHub workflow) as the ship gate so empty help cannot merge unnoticed.
+
 Moved from Dev-Centr into OpenShellOrg as the reusable progressive-help library and global `help` entry point.

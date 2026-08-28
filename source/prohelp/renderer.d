@@ -51,6 +51,16 @@ public bool isStdoutTTY() {
     }
 }
 
+public bool isStdinTTY() {
+    version(Windows) {
+        HANDLE hIn = GetStdHandle(STD_INPUT_HANDLE);
+        DWORD mode;
+        return GetConsoleMode(hIn, &mode) != 0;
+    } else {
+        return isatty(STDIN_FILENO) != 0;
+    }
+}
+
 // Helper to strip style tags from formatted text
 public string stripStyles(string text) {
     auto colorTagRx = ctRegex!`<color=(#[0-9A-Fa-f]{6}|[a-zA-Z]+)>`;
@@ -293,6 +303,21 @@ public string renderSectionBox(Command cmd, Section sec, string[] path, string l
         sb.put(framedDivider(" Content ", contentWidth, bx, enableColor));
         foreach (line; wrapText(sec.content, contentWidth))
             sb.put(framedRow(line, contentWidth, bx, enableColor));
+    }
+
+    if (sec.examples.length > 0) {
+        sb.put(framedDivider(" Examples ", contentWidth, bx, enableColor));
+        foreach (ex; sec.examples) {
+            if (ex.title.length) {
+                foreach (line; wrapText("  " ~ ex.title, contentWidth))
+                    sb.put(framedRow(line, contentWidth, bx, enableColor));
+            }
+            if (ex.command.length) {
+                auto prefix = ex.title.length ? "    " : "  ";
+                foreach (line; wrapText(prefix ~ ex.command, contentWidth))
+                    sb.put(framedRow(line, contentWidth, bx, enableColor));
+            }
+        }
     }
 
     if (sec.subsections.length > 0) {

@@ -4,10 +4,12 @@ import std.array;
 import std.algorithm;
 import std.string;
 import std.stdio;
+import prohelp.check;
 import prohelp.config;
 import prohelp.dispatch;
 import prohelp.intercept;
 import prohelp.registration;
+import prohelp.scaffold;
 import prohelp.wrapper;
 
 version (ProhelpExecutable) {
@@ -83,6 +85,21 @@ void main(string[] argv) {
         exit(cast(ubyte) runAsHelp(tail[1 .. $]));
     }
 
+    if (tail.length && tail[0] == "init") {
+        import core.stdc.stdlib : exit;
+        exit(cast(ubyte) runInitCommand(tail[1 .. $]));
+    }
+
+    if (tail.length && tail[0] == "fill") {
+        import core.stdc.stdlib : exit;
+        exit(cast(ubyte) runFillCommand(tail[1 .. $]));
+    }
+
+    if (tail.length && tail[0] == "check") {
+        import core.stdc.stdlib : exit;
+        exit(cast(ubyte) runCheckCommand(tail[1 .. $]));
+    }
+
     InterceptConfig config = parseCliConfig(tail);
 
     if (!config.isConfigured && tail.length > 0 && (tail[0] == "--schema" || tail[0] == "-f")) {
@@ -102,6 +119,9 @@ void main(string[] argv) {
     } else {
         stderr.writeln("prohelp error: Unrecognized arguments.");
         stderr.writeln("Run 'prohelp ?' for built-in help, or:");
+        stderr.writeln("  prohelp init [--name myapp] [--fill]");
+        stderr.writeln("  prohelp fill [help.sdl]");
+        stderr.writeln("  prohelp check [help.sdl] [--strict]");
         stderr.writeln("  prohelp wrapper install");
         stderr.writeln("  prohelp --as-help <command>");
         stderr.writeln("  prohelp path/to/help.sdl ?");

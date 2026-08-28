@@ -1,6 +1,10 @@
 command "tar" {
+    title "GNU tar"
     summary "Tape archiver utility"
     description "An archiver utility used to combine multiple files into a single archive file, often referred to as a 'tarball'."
+    homepage "https://www.gnu.org/software/tar/"
+    docs "https://www.gnu.org/software/tar/manual/"
+    issues "https://savannah.gnu.org/bugs/?group=tar"
 
     // Multilingual support
     locale "de" {
