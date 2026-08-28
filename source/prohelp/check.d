@@ -207,7 +207,7 @@ int printCheckReport(const CheckReport report, bool strict, bool color) {
 
     if (!strict && report.warnings > 0) {
         writeln(dim, "Ship gate: prohelp check --strict  (fails on warnings)", reset);
-        writeln(dim, "CI:        uses: dev-centr/prohelp/.github/workflows/check-schema.yml", reset);
+        writeln(dim, "CI:        uses: openshellorg/prohelp/.github/workflows/check-schema.yml", reset);
     }
 
     if (report.passed(strict)) {

@@ -109,7 +109,7 @@ Downstream repos opt into the ship gate:
 ----
 jobs:
   prohelp:
-    uses: dev-centr/prohelp/.github/workflows/check-schema.yml@main
+    uses: openshellorg/prohelp/.github/workflows/check-schema.yml@main
     with:
       schema-path: help.sdl
       strict: true

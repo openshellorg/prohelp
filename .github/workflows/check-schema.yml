@@ -4,7 +4,7 @@
 #
 #   jobs:
 #     prohelp:
-#       uses: dev-centr/prohelp/.github/workflows/check-schema.yml@main
+#       uses: openshellorg/prohelp/.github/workflows/check-schema.yml@main
 #       with:
 #         schema-path: help.sdl
 #         strict: true
@@ -29,7 +29,7 @@ on:
       prohelp-repository:
         description: GitHub repo that provides the prohelp checker
         type: string
-        default: dev-centr/prohelp
+        default: openshellorg/prohelp
       prohelp-ref:
         description: Git ref of prohelp to build (tag or branch)
         type: string
@@ -59,7 +59,7 @@ jobs:
       - name: Checkout prohelp
         uses: actions/checkout@v4
         with:
-          repository: ${{ inputs.prohelp-repository || 'dev-centr/prohelp' }}
+          repository: ${{ inputs.prohelp-repository || 'openshellorg/prohelp' }}
           ref: ${{ inputs.prohelp-ref || 'main' }}
           path: .prohelp-tool
 
