@@ -8,6 +8,8 @@ This project maintains a structured release history with links to detailed relea
 
 ## Release History
 
+* **2026-09-10** — [Crawlability + no-JS fallback](changelog-details/2026-09-10%20-%20crawlability-no-js.md): site public/robots.txt + sitemap.xml (home + shell-help.html); index.html keeps #root with h1 and purpose paragraph for no-JS readers.
+
 * **2026-08-18** — [Init, fill, and check](changelog-details/2026-08-18%20-%20init-fill-check.md): `prohelp init` writes a shaped schema; `prohelp fill` is the questionnaire; `prohelp check [--strict]` reports completeness. Reusable workflow `.github/workflows/check-schema.yml` for downstream CI. Parser now keeps `example` tags and the preview renderer shows them.
 
 * **2026-08-07** — Static box: frame glyphs always dim; section dividers share one width formula with content rows (display-column math, not UTF-8 byte length).
