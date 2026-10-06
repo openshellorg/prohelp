@@ -2,7 +2,7 @@
 
 ## Problem
 
-Static help frames use Unicode box-drawing (`┌─│`) and notices use punctuation like `—`. On Windows, PowerShell/conhost often start on OEM code page **437**. UTF-8 bytes were written as-is, so glyphs mojibaked (`┌` → `Γöî`, `—` → `ΓÇö`). This was **not** a UTF-16 help.sdl bug and **not** the nushell wrapper path — default static mode always rendered those boxes for every shell.
+Static help frames use Unicode box-drawing (`┌─│`) and notices use punctuation like `—`. On Windows, PowerShell/conhost often start on OEM code page **437**. UTF-8 bytes were written as-is, so glyphs mojibaked (`┌` → `Γöî`, `—` → `ΓÇö`). This was **not** a UTF-16 help.sdl bug and **not** the nushell wrapper path — default static mode always rendered those boxes for every shell. <!-- mojibake-guard: allow -->
 
 ## Fix
 
