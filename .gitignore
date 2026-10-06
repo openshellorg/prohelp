@@ -63,3 +63,5 @@ build/
 !site/public/**
 !site/src/
 !site/src/**/*
+!/.editorconfig
+!/.gitattributes
