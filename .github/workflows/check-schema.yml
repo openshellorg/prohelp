@@ -54,17 +54,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout caller
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Checkout prohelp
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ inputs.prohelp-repository || 'openshellorg/prohelp' }}
           ref: ${{ inputs.prohelp-ref || 'main' }}
           path: .prohelp-tool
 
       - name: Setup D compiler
-        uses: dlang-community/setup-dlang@v1
+        uses: dlang-community/setup-dlang@v2
         with:
           compiler: ldc-latest
 
