@@ -5,7 +5,7 @@
         "OpenShellOrg",
         "dev-centr"
     ],
-    "license": "Proprietary",
+    "license": "LicenseRef-PCDL",
     "homepage": "https://github.com/openshellorg/prohelp",
     "targetType": "library",
     "dependencies": {
