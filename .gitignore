@@ -1,4 +1,4 @@
-﻿# Exclude dependency and build folders immediately without allow prefixes (prevents Git deep recursion)
+# Exclude dependency and build folders immediately without allow prefixes (prevents Git deep recursion)
 node_modules/
 dist/
 out/
@@ -31,6 +31,7 @@ build/
 # Allow specific root files
 !.gitignore
 !README.adoc
+!/README.md
 !CHANGELOG.md
 !LICENSE
 !COPYING
