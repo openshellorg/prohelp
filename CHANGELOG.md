@@ -6,6 +6,10 @@ This project maintains a structured release history with links to detailed relea
 
 ---
 
+## 2026-11-15
+
+The README contents list now sits under the header inside the expander.
+
 ## Release History
 
 * **2026-10-26** — 0.2.4: dub.json `license` now `LicenseRef-PCDL` (Prohelp Copyleft and Disclosure License, see LICENSE) instead of `Proprietary`.
